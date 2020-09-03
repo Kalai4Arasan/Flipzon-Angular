@@ -1,0 +1,80 @@
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <a class="navbar-brand text-white " routerLink="/"><img src="../assets/logo/cart.png" height="40" width="40" [ngStyle]="{borderRadius:'3rem',marginRight:'5px'}"/>Flipzon</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span><i class="fa fa-bars text-white"></i></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto links">
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Electronics
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item " routerLinkActive="text-success" [routerLink]="['/user/showproducts','SmartPhones']">SmartPhones</a>
+                <a class="dropdown-item " routerLinkActive="text-success" [routerLink]="['/user/showproducts','Laptops']">Laptops</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Cloths
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item " routerLinkActive="text-success" [routerLink]="['/user/showproducts','Men']">Men</a>
+                <a class="dropdown-item " routerLinkActive="text-success" [routerLink]="['/user/showproducts','Women']">Women</a>
+                <a class="dropdown-item " routerLinkActive="text-success" [routerLink]="['/user/showproducts','Kids']">Kids</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/user/showproducts','Appliances']">
+                    Tv&Appliances
+                </a>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/user/showproducts','OfferZone']">
+                OfferZone<img [ngStyle]="{display:'flex',marginTop:'-30px',marginLeft:'-30px'}" src="../assets/logo/fire.png" height="50" width="130"/>
+                </a>
+            </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav links" >
+                <li *ngIf="userData!=null" class="nav-item dropdown text-white">
+                    <a class="nav-link text-white" [ngStyle]="{display:'flex',marginTop:'-10px'}" routerLinkActive="text-success" [routerLink]="['/user/showproducts','cart']">
+                        <img src="../assets/logo/cart.png" height="40" width="40"/>
+                        <strong [ngStyle]="{marginLeft:'-21px',marginTop:'-18px',color:'orange'}"><span *ngIf="cartCount>0;else elseCartcount" class="badge badge-pill badge-light">{{cartCount}}</span><ng-template #elseCartcount>0</ng-template></strong>
+                    </a>
+                </li>
+                <li *ngIf="userData!=null" class="nav-item dropdown text-white">
+                    <a class="nav-link text-white" routerLinkActive="text-success" routerLink="/orders">
+                        <i class="fa fa-map-marker"> Your Orders</i>
+                    </a>
+                </li>
+            <li class="nav-item dropdown text-white">
+                <span *ngIf="userData==null;else elseBlock">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Account
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item " routerLinkActive="text-success" routerLink="/login">Login</a>
+                        <a class="dropdown-item " routerLinkActive="text-success" routerLink="/register">Register</a>
+                        </div>
+                    </span>
+                <ng-template #elseBlock>
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{userData.name}}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item " routerLinkActive="text-success" routerLink="/profile">Profile</a>
+                        <a class="dropdown-item " [ngStyle]="{cursor:'pointer'}" (click)="logout()">Logout</a>
+                        </div>
+                </ng-template>
+            </li>
+            </ul>
+            </div>
+        </div>
+        </nav>
+        <div class="m-4">
+            <router-outlet></router-outlet>
+        </div>
+    </div>

@@ -88,9 +88,13 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/bootstrap/dist/js/bootstrap.js",
+              "./node_modules/jquery/dist/js/jquery.js"
+            ]
           }
         },
         "lint": {
@@ -119,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "Flipzon-Angular"
+    }
+  },
+  "defaultProject": "Flipzon-Angular",
+  "cli": {
+    "analytics": "5ba6e278-95eb-4f03-a3a1-ea717daabc2d"
+  }
 }

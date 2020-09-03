@@ -1,0 +1,23 @@
+<div class="wrapper animate__animated animate__fadeIn" [ngStyle]="{marginTop:'10%'}">
+    <div id="formContent" >
+
+        <div class="" [ngStyle]="{marginTop:'1rem'}">
+        <h3><img src="../../../assets/logo/HomeLogo.png" height="40" width="40" [ngStyle]="{borderRadius:'3rem',marginRight:'5px'}"/>Flipzon</h3>
+        </div>
+        <form #form="ngForm" (submit)="login()">
+        <input class="input" #inp1="ngModel" type="text" [(ngModel)]="username" id="username" name="username" placeholder="Username"required/><br/>
+        <span [ngClass]="{'d-none':inp1.untouched||inp1.valid}" ><small class="text-danger">Username is required</small><br/></span>
+        <input class="input" type="password" [(ngModel)]="password" #inp2="ngModel" id="password" name="password" placeholder="Password" required/><br/>
+        <span [ngClass]="{'d-none':inp2.untouched||inp2.valid}" ><small class="text-danger">password is required</small><br/></span>
+        <span [ngClass]="{'d-none':inp2.untouched || password.length>6 }" ><small class="text-danger">password length must be greater than 6</small><br/></span>
+        <span [ngClass]="{'d-none':finalError==false}" ><small class="text-danger">Invalid Username or Password</small><br/></span>
+        <input type="submit" class="btn btn-primary" value="LogIn"/>
+        </form>
+        <div id="formFooter">
+        <small>Create Account <a [routerLink]="['/register']">click here</a></small><br/>
+        <a [ngStyle]="{fontSize:'13px'}" [routerLink]="['/forgotpassword']">Forgot Password?</a><br/>
+        <a [ngStyle]="{fontSize:'13px'}" [routerLink]="['/']"><i class="fa fa-home"></i> Home</a>
+        </div>
+
+    </div>
+    </div>

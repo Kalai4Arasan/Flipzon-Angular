@@ -1,0 +1,95 @@
+
+<h3 [ngStyle]="{marginTop:'1rem'}">
+    {{category}}
+</h3><hr/>
+        <div *ngIf="isLoading;else elseBlock">
+            <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%'}"></i>
+        </div>
+        <ng-template #elseBlock>
+            <div *ngIf="productData.length>0;else finalNotFound" class="row animate__animated animate__fadeIn">
+                <div class="col-md-3" [ngStyle]="{borderRight:'1px solid #c7c6c3',minHeight:'400px'}">
+                    <h5>Filter</h5><hr/>
+                    <span *ngIf="finalMinRate!=null && finalMaxRate!=null"><p class="badge badge-warning mt-2 ml-2">{{finalMinRate}}-{{finalMaxRate}} <i [ngStyle]="{cursor:'pointer'}" class="fa fa-times text-danger" (click)="cancelRate()" ></i></p></span>
+                    <span *ngIf="filterBrand.length>0">
+                        <p  *ngFor="let item of filterBrand" class="badge badge-info mt-2 ml-2">{{item}} <i [ngStyle]="{cursor:'pointer'}" (click)="cancelBrand(item)" class="fa fa-times text-danger"></i></p>
+                    </span>
+                    <br/><strong class="mb-1">Rate :</strong><br/>
+                    <div class="row">
+                        <div class="col-md-4">
+                        <input  [(ngModel)]="min" class="input form-control" #inp1="ngModel" id="min" name="min" placeholder="Min"/>
+                        </div>
+                        <div class="col-md-4">
+                        <input [(ngModel)]="max" class="input form-control" #inp2="ngModel" id="max" name="max" placeholder="Max"/>
+                        </div>
+                        <div class="col-md-4">
+                        <button (click)="submitRate()" class="btn btn-primary"><i class="fa fa-check"></i></button>
+                        </div>
+                    </div>
+                    <div [ngClass]="{'d-none':inp1.untouched||min>0}">
+                        <small class="text-danger">please enter a minimum value</small>
+                    </div>
+                    <div [ngClass]="{'d-none':inp2.untouched||max>0}">
+                        <small class="text-danger">please enter a max value</small>
+                    </div>
+                    <div [ngClass]="{'d-none':rateError==false}" class="row"><span [ngStyle]="{marginLeft:'3rem'}"><small class="text-danger">Rate Value Invalid</small><br/></span></div>
+                    <strong class="mb-3 mt-2">Brands :</strong><br/>
+                        <div *ngIf="brands!=null">
+                            <div *ngFor="let item of brands" class="row" [ngStyle]="{marginLeft:'4rem'}">
+                                    <label class="font-weight-bolder" >
+                                    <input #tag (change)="handleBrand(tag)" type="checkbox" name="checking[]"  value={{item}} /> 
+                                    {{item}}</label><br/>
+                            </div>
+                        </div>
+                    </div>
+                <div class="col-md-9" *ngIf="productData.length>0 && filteredData==null;else filteredBlock">
+                    <div class="row" *ngFor="let item of productData" [ngStyle]="{marginLeft:'1rem',borderBottom:'1px solid #c7c6c3'}">
+                        <div class="col-md-4">
+                        <a><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
+                        </a>
+                        </div>
+                        <div class="col-md-8">
+                        <div [ngStyle]="{margin:'2rem'}">
+                            <h3>{{item.productname}}</h3>
+                        <small class="badge badge-success badge-pill ">{{item.rating}} <i class="fa fa-star"></i></small>
+                        <span *ngIf="item.discount==0;else elseOrder" [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{item.rate}}</span>
+                        <ng-template #elseOrder><span [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{item.rate-item.discount}}</span><span><small [ngStyle]="{color:'grey',textDecoration:'line-through',marginLeft:'.5rem'}">&#8377;{{item.rate}}</small><strong class="badge badge-success ml-3">{{(((item.discount)/item.rate)*100).toFixed(2)}}% off</strong></span></ng-template>  
+                        <p [ngStyle]="{marginTop:'1rem',maxHeight:'100px',width:'300px',overflow:'hidden',textOverflow:'ellipsis'}">
+                            {{item.description}}
+                        </p>
+                        <span [ngStyle]="{display:'flex',marginTop:'-25px'}">...</span>
+                        <h3 class="badge badge-primary">{{item.brand}}</h3>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #filteredBlock>
+                    <div *ngIf="filteredData.length>0;else noFilterFound">
+                        <div class="row" *ngFor="let item of filteredData" [ngStyle]="{marginLeft:'1rem',borderBottom:'1px solid #c7c6c3'}">
+                            <div class="col-md-4">
+                            <a><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
+                            </a>
+                            </div>
+                            <div class="col-md-8">
+                            <div [ngStyle]="{margin:'2rem'}">
+                                <h3>{{item.productname}}</h3>
+                            <small class="badge badge-success badge-pill ">{{item.rating}} <i class="fa fa-star"></i></small>
+                            <span *ngIf="item.discount==0;else elseOrder" [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{item.rate}}</span>
+                            <ng-template #elseOrder><span [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{item.rate-item.discount}}</span><span><small [ngStyle]="{color:'grey',textDecoration:'line-through',marginLeft:'.5rem'}">&#8377;{{item.rate}}</small><strong class="badge badge-success ml-3">{{(((item.discount)/item.rate)*100).toFixed(2)}}% off</strong></span></ng-template>  
+                            <p [ngStyle]="{marginTop:'1rem',maxHeight:'100px',width:'300px',overflow:'hidden',textOverflow:'ellipsis'}">
+                                {{item.description}}
+                            </p>
+                            <span [ngStyle]="{display:'flex',marginTop:'-25px'}">...</span>
+                            <h3 class="badge badge-primary">{{item.brand}}</h3>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #noFilterFound>
+                    <img [ngStyle]="{display:'block',width:'50%',marginLeft:'auto',marginRight:'auto'}" src="{{'/assets/logo/emptyStock.png'}}"/>
+                </ng-template>
+            </div>
+            <ng-template #finalNotFound class="container">
+                <img [ngStyle]="{display:'block',width:'50%',marginLeft:'auto',marginRight:'auto'}" src="{{'/assets/logo/emptyStock.png'}}"/>
+            </ng-template>
+        </ng-template>
