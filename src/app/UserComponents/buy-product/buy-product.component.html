@@ -1,0 +1,32 @@
+<div *ngIf="isLoading;else elseBlock">
+    <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%',fontSize:'15px'}"></i>
+</div>
+<ng-template #elseBlock>
+<div class="mt-4 row animate__animated animate__fadeIn">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 m-4">
+        <h3>Delivery Details:</h3>
+        <hr/>
+        <form class="form" (submit)="handleSubmit()">
+            <label for="name" class="mt-4 font-weight-bolder">Buyer Name:</label>
+            <input id="name" class="form-control"  value={{User.name}} readOnly/>
+            <label for="pdname" class="mt-4 font-weight-bolder">Product Name</label>
+            <input id="pdname" class="form-control" value={{product.productname}} readOnly/>
+            <label for="rate" class="mt-4 font-weight-bolder"> Amount <span><small>(for one product)</small></span> :</label>
+            <input id="rate" class="form-control" value={{getRate()}} readOnly/>
+            <label for="address"  class="mt-4 font-weight-bolder" >Address</label>
+            <textarea #textAreaInp="ngModel" id="address" [(ngModel)]="address" class="form-control" name="address" value={{address}}></textarea>
+            <h6 *ngIf="textAreaInp.touched && address.length==0" class="text-danger text-center mt-1" [ngStyle]="{fontSize:'14px'}">Addess field must be required...<br/></h6>
+            <label for="rate" class="mt-4 font-weight-bolder" > Quantity :</label>
+            <input id="rate" #quantityInp="ngModel" (change)="total()" [(ngModel)]="quantity" name="quantity" type="Number" min="1" max="20" class="form-control"/>
+            <h6 *ngIf="quantityInp.touched && quantity==null" class="text-danger text-center mt-1" [ngStyle]="{fontSize:'14px'}">Quantity Field Must be required...<br/></h6>
+            <h6 *ngIf="quantityInp.touched && quantity>20"  class="text-danger text-center mt-1" [ngStyle]="{fontSize:'14px'}">Quantity limit is 20...<br/></h6>
+            <label for="totrate" class="mt-4 font-weight-bolder"> Total Amount :</label>
+            <strong id="totrate" [(ngModel)]="totalAmount" name="totalAmount" class="form-control alert alert-info">&#8377;{{totalAmount}}</strong>
+            <h6 *ngIf="ferror" class="text-danger text-center mt-1" [ngStyle]="{fontSize:'14px'}">{{ferror}}<br/></h6>
+            <button type="submit" class="btn btn-success" [ngStyle]="{marginLeft:'30%',marginRight:'30%'}">Proceed To Payment</button>
+        </form> 
+    </div>
+    <div class="col-md-3"></div>
+</div>
+</ng-template>

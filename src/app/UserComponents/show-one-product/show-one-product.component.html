@@ -1,0 +1,67 @@
+<div *ngIf="isLoading;else dataBlock">
+    <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%',fontSize:'15px'}"></i>
+</div>
+
+<ng-template #dataBlock>
+<div [ngStyle]="{marginTop:'3rem'}" class="animate__animated animate__fadeIn">
+    <div class="row" [ngStyle]="{display:'flex',marginLeft:'-30px'}">
+    <div class="col-md-1 ">
+        <div *ngFor="let item of product.images" [ngStyle]="{maxHeight:'100px',width:'40px',marginTop:'.5rem'}">
+        <img class="card-img-top img-thumbnail thumbHover" [ngStyle]="{cursor:'pointer'}" (mouseover)="setImage(item)"  src="{{'/assets/productImages/'+item}}" alt="Card image cap"/>
+        </div>
+    </div>
+    <div class="col-md-3">
+    <div *ngIf="showImage" ><img class="card-img-top" [ngStyle]="{maxHeight:'400px',maxWidth:'250px'}" src="{{'/assets/productImages/'+showImage}}" alt="Card image cap"/></div>
+    </div>
+    <div class="col-md-7">
+    <div [ngStyle]="{margin:'2rem'}">
+        <h3>{{product.productname}}</h3>
+    <small class="badge badge-success badge-pill ">{{product.rating}} <i class="fa fa-star"></i></small>
+    <span *ngIf="product.discount==0;else elseOrder" [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{product.rate}}</span>
+                        <ng-template #elseOrder><span [ngStyle]="{marginLeft:'1rem',fontSize:'20px',fontWeight:'700'}">&#8377;{{product.rate-product.discount}}</span><span><small [ngStyle]="{color:'grey',textDecoration:'line-through',marginLeft:'.5rem'}">&#8377;{{product.rate}}</small><strong class="badge badge-success ml-3">{{(((product.discount)/product.rate)*100).toFixed(2)}}% off</strong></span></ng-template>  
+    <strong><br/><br/>Description :</strong>
+    <p [ngStyle]="{marginTop:'1rem',fontSize:'13px'}">
+        {{product.description}}
+    </p>
+    <h3 class="badge badge-primary">{{product.brand}}</h3><h3 class="badge badge-primary ml-2">{{product.category}}</h3>
+    </div>
+    <h6 *ngIf="error" class="alert alert-danger text-center" [ngStyle]="{marginLeft:'5rem',marginRight:'5rem'}">{{error}}</h6>
+    <h6 *ngIf="success" [ngStyle]="{marginLeft:'5rem',marginRight:'5rem'}" class="alert alert-success text-center">{{success}}</h6>
+    <div [ngStyle]="{marginLeft:'2rem'}">
+    <button (click)="handleCart(product)" [ngClass]='{"disabled":isCartLoading==true}' class="btn btn-warning w-25"><span *ngIf="isCartLoading==false;else spinnerBlock">Add to <i class="fa fa-shopping-cart"></i></span><ng-template #spinnerBlock><i class="fa fa-spin fa-spinner"></i></ng-template></button>
+    <button (click)="handleBuy(product.productname)" class="btn btn-primary ml-3 w-25">Buy</button>
+    </div>
+    <h4 class="mt-4" [ngStyle]="{marginLeft:'2rem'}">Reviews :</h4>
+    <div class="mt-4" [ngStyle]="{marginLeft:'2rem',marginBottom:'2rem'}">
+
+                <div *ngIf="reviews!=null && reviews.length>0;else elseBlock;">
+                    <div *ngFor="let item of reviews" class="card" >
+                        <div class="row m-3">
+                            <div class="col-md-1">
+                                <img src="/assets/logo/user.png" height="40" width="40" alt="user"/>
+                            </div> 
+                            <div class="col-md-8">
+                                <h6><span *ngIf="userData && userData.name==item.name;else anotherUser"> {{item.name+' (You)'}}</span>
+                                    <ng-template #anotherUser>{{item.name}}</ng-template>
+                                    <span>
+                                    <small> made a review</small>
+                                </span>
+                                </h6> 
+                                <small>on <strong>{{item.uploaded_date.substring(0,10)}}</strong></small>
+                                <h5 [ngStyle]="{float:'right'}"><i class="fa fa-star" [ngStyle]="{color:'yellow'}"></i> {{item.rating}}</h5>
+                                <hr/>
+                                <p>
+                                    {{item.review}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #elseBlock>
+                    <p>No Reviews</p>
+                </ng-template>
+    </div>
+    </div>
+</div>
+</div>
+</ng-template>

@@ -44,7 +44,7 @@
                 <div class="col-md-9" *ngIf="productData.length>0 && filteredData==null;else filteredBlock">
                     <div class="row" *ngFor="let item of productData" [ngStyle]="{marginLeft:'1rem',borderBottom:'1px solid #c7c6c3'}">
                         <div class="col-md-4">
-                        <a><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
+                        <a [routerLink]="['/user/showoneproduct',item.productname]"><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
                         </a>
                         </div>
                         <div class="col-md-8">
@@ -66,7 +66,7 @@
                     <div *ngIf="filteredData.length>0;else noFilterFound">
                         <div class="row" *ngFor="let item of filteredData" [ngStyle]="{marginLeft:'1rem',borderBottom:'1px solid #c7c6c3'}">
                             <div class="col-md-4">
-                            <a><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
+                            <a [routerLink]="['/user/showoneproduct',item.productname]"><img class="card-img-top" [ngStyle]="{margin:'2rem',height:'180px',width:'130px'}"  src="{{'/assets/productImages/'+item.images[0]}}" alt="Card image cap"/>
                             </a>
                             </div>
                             <div class="col-md-8">

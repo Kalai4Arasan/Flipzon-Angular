@@ -40,9 +40,9 @@
             <div class="form-inline my-2 my-lg-0">
             <ul class="navbar-nav links" >
                 <li *ngIf="userData!=null" class="nav-item dropdown text-white">
-                    <a class="nav-link text-white" [ngStyle]="{display:'flex',marginTop:'-10px'}" routerLinkActive="text-success" [routerLink]="['/user/showproducts','cart']">
+                    <a class="nav-link text-white" [ngStyle]="{display:'flex',marginTop:'-10px'}" routerLinkActive="text-success" [routerLink]="['/user/cart']">
                         <img src="../assets/logo/cart.png" height="40" width="40"/>
-                        <strong [ngStyle]="{marginLeft:'-21px',marginTop:'-18px',color:'orange'}"><span *ngIf="cartCount>0;else elseCartcount" class="badge badge-pill badge-light">{{cartCount}}</span><ng-template #elseCartcount>0</ng-template></strong>
+                        <strong [ngStyle]="{marginLeft:'-26px',marginTop:'-18px',color:'orange'}"><span *ngIf="cartCount>0;else elseCartcount" class="badge badge-pill badge-light">{{cartCount}}</span><ng-template #elseCartcount><i class="far fa-frown"></i></ng-template></strong>
                     </a>
                 </li>
                 <li *ngIf="userData!=null" class="nav-item dropdown text-white">

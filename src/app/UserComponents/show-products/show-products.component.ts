@@ -36,13 +36,24 @@ export class ShowProductsComponent implements OnInit {
         this.finalMaxRate=null;
         this.filteredData=null;
         this.category=params.get('category')
-        this._productService.getProducts(this.category)
-        .subscribe(data=>{
-          this.productData=data
-          this.isLoading=false
-          console.log(this.productData)
-          this.setUniqueCategory(data)
-        })
+        if(this.category!="OfferZone"){
+          this._productService.getProducts(this.category)
+          .subscribe(data=>{
+            this.productData=data
+            this.isLoading=false
+            console.log(this.productData)
+            this.setUniqueCategory(data)
+          })
+        }
+        else{
+          this._productService.getOfferedProducts(this.category)
+          .subscribe(data=>{
+            this.productData=data
+            this.isLoading=false
+            console.log(this.productData)
+            this.setUniqueCategory(data)
+          })
+        }
     })
   }
   setUniqueCategory(data){

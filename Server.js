@@ -91,6 +91,17 @@ app.get('/getProducts',(req,res)=>{
   })
 })
 
+app.get('/getOneProduct',(req,res)=>{
+  productname=req.query.productname
+  client.query(`SELECT p.pid,p.productname,p.discount,p.rate,p.description,p.rating,c.category,b.brand,p.images FROM "Products" AS p,"Category" AS c,"Brands" AS b WHERE p.cid=c.cid AND p.bid=b.bid AND p.productname=$1`,[productname],(err,result)=>{
+      if(err){console.log(err)}  
+        if(result.rowCount==0){
+          return res.send([])
+        }
+        res.send(result.rows)
+  })
+})
+
 
 
 app.post('/buyproduct',(req,res)=>{
@@ -98,8 +109,8 @@ app.post('/buyproduct',(req,res)=>{
   pid=req.body.Data.pid
   quantity=req.body.Data.quantity
   totalrate=req.body.Data.totalRate
-  buyingdate=req.body.Data.buyingDate
-  //console.log(buyingdate)
+  buyingdate=req.body.Data.buyingdate
+  // console.log(req.body)
   client.query(`INSERT INTO "Buy"(uid,pid,quantity,total_amount,buying_date) VALUES($1,$2,$3,$4,$5)`,[uid,pid,quantity,totalrate,buyingdate],(err,result)=>{
     if(err){
       console.log(err)
@@ -120,7 +131,7 @@ app.post('/addtocart',(req,res)=>{
     if(result.rowCount==0){
       client.query(`INSERT INTO "Cart"(uid,pid) VALUES($1,$2)`,[uid,pid],(err,result)=>{
         if(err){
-          return res.send([])
+          return res.send(["Error"])
         }
         else{
           return res.send([req.body.Data])
@@ -128,14 +139,14 @@ app.post('/addtocart',(req,res)=>{
       })
     }
     else{
-      return res.send("Error")
+      return res.send(["Error"])
     }
   })
   // return res.send([req.body.Data])
 })
 
 app.post('/cart',(req,res)=>{
-  uid=req.body.User.uid
+  uid=req.body.User
   client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Cart" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
     if(err){
       console.log(err)
@@ -162,6 +173,7 @@ app.post('/orderedProducts',(req,res)=>{
 app.post('/deleteCart',(req,res)=>{
   cid=req.body.Data.cid
   uid=req.body.Data.uid
+  console.log(req.body)
   client.query(`DELETE FROM "Cart" WHERE cart_id=$1`,[cid],(err,result)=>{
     client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Cart" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
       if(err){
@@ -176,7 +188,7 @@ app.post('/deleteCart',(req,res)=>{
 })
 
 app.post("/getCartCount",(req,res)=>{
-    uid=req.body.User.uid
+    uid=req.body.User
     client.query(`SELECT * FROM "Cart" WHERE uid=$1`,[uid],(err,result)=>{
       res.send([result.rowCount])
     })
@@ -385,8 +397,7 @@ app.post('/addReview',(req,res)=>{
 })
 
 app.post('/getReviews',(req,res)=>{
-  pid=req.body.Data.pid
-
+  pid=req.body.Data
   client.query(`SELECT r.*,u.name,u.email FROM "Reviews" AS r,"User" AS u WHERE r.uid=u.id AND pid=$1`,[pid],(err,result)=>{
     if(!err){
       //console.log(result.rows)
