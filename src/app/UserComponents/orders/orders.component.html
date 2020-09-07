@@ -1,0 +1,10 @@
+<div class="animate__animated animate__fadeIn" [ngStyle]="{marginTop:'1rem'}">
+    <h3>Your Orders:</h3><br/>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <a type="button" [routerLinkActive]="['text-white','bg-primary']" [routerLink]="['/user/orders/category/pending']" class="btn btn-light">Pending</a>
+        <a type="button" [routerLinkActive]="['text-white','bg-primary']" [routerLink]="['/user/orders/category/shipped']" class="btn btn-light">Shipped</a>
+        <a type="button" [routerLinkActive]="['text-white','bg-primary']" [routerLink]="['/user/orders/category/canceled']" class="btn btn-light">Canceled</a>
+    </div>
+    <hr/>
+    <router-outlet></router-outlet>
+</div>

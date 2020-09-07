@@ -46,7 +46,7 @@
                     </a>
                 </li>
                 <li *ngIf="userData!=null" class="nav-item dropdown text-white">
-                    <a class="nav-link text-white" routerLinkActive="text-success" routerLink="/orders">
+                    <a class="nav-link text-white" routerLinkActive="text-success" [routerLink]="['/user/orders']">
                         <i class="fa fa-map-marker"> Your Orders</i>
                     </a>
                 </li>

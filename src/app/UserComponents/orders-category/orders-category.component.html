@@ -1,0 +1,68 @@
+<h5>{{type|titlecase}} Products:</h5>
+            <div *ngIf="isLoading;else elsBlock">
+                <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%',fontSize:'15px'}"></i>
+            </div>
+            <ng-template #elsBlock>
+            <div *ngIf="success" [ngStyle]="{margin:'1rem'}"><small class="alert alert-warning m-4 text-center">{{success}}</small></div>
+            <small *ngIf="fail" class="alert alert-info m-4 text-center">{{fail}}</small>
+            <div *ngIf="Data.length>0;else notFound">
+            <table class="table mt-2 animate__animated animate__fadeIn">
+                <thead class="thead-dark">
+                    <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">ProductImage</th>
+                    <th scope="col">ProductName</th>
+                    <th scope="col">DeliveryAddress</th>
+                    <th scope="col">OrderedDate</th>
+                    <th scope="col">ShippingDate</th>
+                    <th scope="col">DeliveryDate</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">TotalAmount</th>
+                    <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let item of Data">
+                        <th scope="row">{{Data.indexOf(item)+1}}</th>
+                        <td><img [ngStyle]="{height:'50px',idth:'30px'}" src="{{'/assets/productImages/'+item.images[0]}}"/></td>
+                        <td>{{item.productname}}</td>
+                        <td>{{item.address}}</td>
+                        <td>{{item.buying_date|slice:0:10}}</td>
+                        <td class="text-center"><span *ngIf="item.shiping_date==null;else dateBlock1"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock1>{{item.shiping_date | slice:0:10}}</ng-template></td>
+                        <td class="text-center"><span *ngIf="item.delivery_date==null;else dateBlock2"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock2>{{item.delivery_date | slice:0:10}}</ng-template></td>
+                        <td class="text-success">{{item.quantity}}</td>
+                        <td class="text-success">&#8377;{{item.total_amount}}</td>
+                        <td *ngIf="type==='pending'"><button (click)="handleCancel(item)" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button></td>
+                        <td *ngIf="type==='shipped'" [ngStyle]="{width:'150px'}">
+                            <div *ngIf="reviewsId.indexOf(item.buyid)==-1;else Reviewed">
+                            <div *ngIf="hasReview[item.buyid]==true;else notStarted">
+                                <form [ngStyle]="{width:'300px'}" class="form" #form="ngForm" (submit)="handleSubmit(form.value)">
+                                    <input [ngModel]="uid.value" #uid type="hidden" name="uid" value={{userData.id}}/>
+                                    <input [ngModel]="pid.value" #pid type="hidden" name="pid" value={{item.pid}}/>
+                                    <input [ngModel]="buyid.value" #buyid type="hidden" name="buyid" value={{item.buyid}}/>
+                                    <i class="fa fa-times text-danger mb-3" (click)="removeReview(item.buyid)" [ngStyle]="{float:'right',cursor:'pointer'}"></i>
+                                    <textarea name="review" #reviewInp="ngModel" [(ngModel)]="review" class="form-control" rows="3" placeholder="Enter Review">
+                                    </textarea>
+                                    <h6 class="text-center text-danger" [ngStyle]="{fontSize:'12px',marginTop:'.5rem'}" [ngClass]="{'d-none': reviewInp.untouched || review.length>0} ">Please give valid review</h6>
+                                    <input class="form-control mt-2" #ratingInp="ngModel" name="rating" type="number" min="1" max="5" [(ngModel)]="rating"/>
+                                    <h6 class="text-center text-danger" [ngStyle]="{fontSize:'12px',marginTop:'.5rem'}" [ngClass]="{'d-none':(rating <=5 && rating >0)} ">Please choose a valid rate</h6>
+                                    <h6 class="text-center text-danger" *ngIf="finalError" [ngStyle]="{fontSize:'12px',marginTop:'.5rem'}" >Invalid Inputs</h6>
+                                    <input type="submit" class="btn btn-sm btn-success text-center mt-3" [ngStyle]="{display:'block',marginLeft:'auto',marginRight:'auto'}" value="add"/>
+                                </form>
+                            </div>
+                            <ng-template #notStarted>
+                                <button class="btn btn-sm btn-outline-primary" data-toggle="modal" (click)="setReview(item.buyid)" data-target="#review"><i class="fa fa-edit"></i>Review</button>
+                            </ng-template>
+                            </div>
+                            <ng-template #Reviewed>
+                                <h6 class="text-success"><i class="fa fa-check"> Reviewed</i></h6>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <ng-template #notFound>
+                <img [ngStyle]="{display:'block',width:'50%',marginLeft:'auto',marginRight:'auto'}" src="{{'/assets/logo/emptyStock.png'}}"/>
+            </ng-template>
+            </ng-template>

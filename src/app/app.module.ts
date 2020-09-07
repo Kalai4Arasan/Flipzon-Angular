@@ -15,6 +15,8 @@ import { ShowOneProductComponent } from './UserComponents/show-one-product/show-
 import { BuyProductComponent } from './UserComponents/buy-product/buy-product.component';
 import { SuccessComponent } from './UserComponents/success/success.component';
 import { CartComponent } from './UserComponents/cart/cart.component';
+import { OrdersComponent } from './UserComponents/orders/orders.component';
+import { OrdersCategoryComponent } from './UserComponents/orders-category/orders-category.component';
 
 
 @NgModule({
@@ -28,6 +30,8 @@ import { CartComponent } from './UserComponents/cart/cart.component';
     BuyProductComponent,
     SuccessComponent,
     CartComponent,
+    OrdersComponent,
+    OrdersCategoryComponent,
   ],
   imports: [
     BrowserModule,

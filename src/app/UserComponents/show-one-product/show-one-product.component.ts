@@ -52,9 +52,11 @@ export class ShowOneProductComponent implements OnInit {
           console.log(result)
           if(result[0]!="Error"){
             this.success="Product Added In Your Cart"
+            this.error=null
           }
           else{
             this.error="Already Added In Your Cart"
+            this.success=null
           }
         })
     }

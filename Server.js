@@ -7,7 +7,7 @@ const multer=require('multer')
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'src/asserts/productImages')
+    cb(null, 'src/app/assets/productImages')
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now()+'.jpg')
@@ -159,7 +159,8 @@ app.post('/cart',(req,res)=>{
 
 app.post('/orderedProducts',(req,res)=>{
   uid=req.body.User.uid
-  client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Buy" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
+  status=req.body.User.status
+  client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Buy" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND a.status=$2 AND d.cid=b.cid AND e.bid=b.bid`,[uid,status],(err,result)=>{
     if(err){
       console.log(err)
     }
@@ -384,7 +385,6 @@ app.post('/addReview',(req,res)=>{
   rating=req.body.Data.rating
   review=req.body.Data.review
   date=new Date()
-  
   client.query(`INSERT INTO "Reviews"(buyid,uid,pid,rating,review,uploaded_date) VALUES($1,$2,$3,$4,$5,$6)`,[buyid,uid,pid,rating,review,date],(err,result)=>{
     if(!err){
       return res.send(['Success'])
@@ -411,10 +411,10 @@ app.post('/getReviews',(req,res)=>{
 
 app.post('/allReviews',(req,res)=>{
   uid=req.body.Data
-  console.log(uid)
+  // console.log(uid)
   client.query(`SELECT * from "Reviews" WHERE uid=$1`,[uid],(err,result)=>{
     if(!err){
-      console.log(result.rows)
+      //console.log(result.rows)
       return res.send(result.rows)
     }
     else{
@@ -422,6 +422,10 @@ app.post('/allReviews',(req,res)=>{
     }
   })
 })
+
+// client.query(`SELECT * FROM "Status"`,(err,result)=>{
+//   console.log(result.rows)
+// })
 
 
 

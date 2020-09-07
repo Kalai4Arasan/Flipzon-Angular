@@ -49,4 +49,16 @@ export class ProductsService {
     }
     return this._http.post<any>('http://localhost:3000/deleteCart',{Data})
   }
+  getOrderedCategory(data):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/orderedproducts',{User:data})
+  }
+  cancelProduct(id):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/cancelProduct',{Product:{'buyid':id}})
+  }
+  getReviewId(id):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/allReviews',{Data:id})
+  }
+  addReview(data):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/addReview',{Data:data})
+  }
 }

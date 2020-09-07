@@ -8,6 +8,8 @@ import { ShowOneProductComponent } from './UserComponents/show-one-product/show-
 import { BuyProductComponent } from './UserComponents/buy-product/buy-product.component';
 import { SuccessComponent } from './UserComponents/success/success.component';
 import { CartComponent } from './UserComponents/cart/cart.component';
+import { OrdersComponent } from './UserComponents/orders/orders.component';
+import { OrdersCategoryComponent } from './UserComponents/orders-category/orders-category.component';
 
 
 const routes: Routes = [
@@ -20,7 +22,13 @@ const routes: Routes = [
     {path:'showoneproduct/:productname',component:ShowOneProductComponent},
     {path:'buyproduct/:productname',component:BuyProductComponent},
     {path:'success',component:SuccessComponent},
-    {path:'cart',component:CartComponent}
+    {path:'cart',component:CartComponent},
+    {path:'orders',component:OrdersComponent,
+    children:[
+      {path:'',pathMatch:'full',redirectTo:'category/pending'},
+      {path:'category/:type',component:OrdersCategoryComponent}
+    ]
+    }
   ]}
 ];
 
