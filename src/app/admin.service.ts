@@ -26,4 +26,13 @@ export class AdminService {
   getOrderedCategory(data):Observable<any>{
     return this._http.post<any>('http://localhost:3000/allOrders',{cid:data})
   }
+  addDates(data):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/addDates',{Dates:data})
+  }
+  allProducts():Observable<any>{
+    return this._http.get<any>('http://localhost:3000/allProducts')
+  }
+  addProduct(data):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/addNewProduct',data)
+  }
 }

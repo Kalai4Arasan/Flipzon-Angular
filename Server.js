@@ -7,7 +7,7 @@ const multer=require('multer')
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'src/app/assets/productImages')
+    cb(null, 'src/assets/productImages')
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now()+'.jpg')
@@ -229,7 +229,7 @@ app.get('/getOfferedProducts',(req,res)=>{
 app.post('/adminLogin',(req,res)=>{
   adminname=req.body.Admin.adminname
   password=req.body.Admin.password
-  console.log(req.body)
+  //console.log(req.body)
   client.query(`SELECT * FROM "Admin" WHERE  (admin_name=$1 AND password=$2) OR (admin_mail=$1 AND password=$2)`,[adminname,password],(err,result)=>{
       if(result.rows.length==0){
         return res.send([""])
@@ -325,10 +325,8 @@ app.get("/allProducts",(req,res)=>{
   })
 })
 
-app.post('/addNewProduct',upload.array('images',12),(req,res)=>{
-  productname=req.body.name
-  brand=req.body.brand
-  category=req.body.category
+app.post('/addNewProduct',upload.array('imagesGroup',12),(req,res)=>{
+  productname=req.body.productname
   description=req.body.description
   rate=req.body.rate
   rating=req.body.rating
@@ -342,14 +340,21 @@ app.post('/addNewProduct',upload.array('images',12),(req,res)=>{
       }
   }
   images+="}"
-  client.query(`INSERT INTO "Products" (productname,bid,cid,description,rate,images,rating) VALUES($1,$2,$3,$4,$5,$6,$7)`,[productname,brand,category,description,rate,images,rating],(err,result)=>{
-    if(!err){
-      return res.send(['Success'])
-    }
-    else{
-      console.log(err)
-    }
+  client.query(`SELECT cid FROM "Category" WHERE category=$1`,[req.body.category],(err,result)=>{
+    category=result.rows[0].cid
+    client.query(`SELECT bid FROM "Brands" WHERE brand=$1`,[req.body.brand],(err,result)=>{
+      brand=result.rows[0].bid
+    client.query(`INSERT INTO "Products" (productname,bid,cid,description,rate,images,rating) VALUES($1,$2,$3,$4,$5,$6,$7)`,[productname,brand,category,description,rate,images,rating],(err,result)=>{
+        if(!err){
+          return res.send(['Success'])
+        }
+        else{
+          console.log(err)
+        }
+      })
+    })
   })
+  
 })
 
 app.post('/allOrders',(req,res)=>{
@@ -369,7 +374,7 @@ app.post('/addDates',(req,res)=>{
   buyid=req.body.Dates.buyid
   shipping=req.body.Dates.shipping
   delivery=req.body.Dates.delivery
-
+  //console.log(req.body)
   client.query(`UPDATE "Buy" SET shiping_date=$1 , delivery_date=$2, status=3 WHERE buyid=$3 `,[shipping,delivery,buyid],(err,result)=>{
     if(!err){
       return res.send(["Success"])

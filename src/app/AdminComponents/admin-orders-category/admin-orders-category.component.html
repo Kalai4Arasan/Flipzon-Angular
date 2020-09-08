@@ -1,37 +1,62 @@
-<div *ngIf="allOrders!=null && allOrders.length>0;else noOrdersBlock">
-    <table class="table mt-2 animate__animated animate__fadeIn">
-        <thead class="thead-dark">
-            <tr>
-            <th scope="col">No.</th>
-            <th scope="col">Buyer</th>
-            <th scope="col">ProductImage</th>
-            <th scope="col">ProductName</th>
-            <th scope="col">DeliveryAddress</th>
-            <th scope="col">OrderedDate</th>
-            <th scope="col">ShippingDate</th>
-            <th scope="col">DeliveryDate</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">TotalAmount</th>
-            <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody *ngIf="allOrders!=null && allOrders.length>0">
-                <tr *ngFor="let item of allOrders;index as i">
-                <th scope="row">{{i+1}}</th>
-                <td>{{item.name}}</td>
-                <td><img [ngStyle]="{height:'50px',width:'30px'}" src="{{'/assets/productImages/'+item.images[0]}}"/></td>
-                <td>{{item.productname}}</td>
-                <td>{{item.address}}</td>
-                <td>{{item.buying_date|slice:0:10}}</td>
-                <td class="text-center"><span *ngIf="item.shiping_date==null;else dateBlock1"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock1>{{item.shiping_date | slice:0:10}}</ng-template></td>
-                <td class="text-center"><span *ngIf="item.delivery_date==null;else dateBlock2"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock2>{{item.delivery_date | slice:0:10}}</ng-template></td>
-                <td class="text-success">{{item.quantity}}</td>
-                <td class="text-success">&#8377;{{item.total_amount}}</td>
-                </tr>
-        </tbody>
-    </table>    
+<div *ngIf="isLoading;else elseBlockdata">
+    <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%'}"></i>
 </div>
-<ng-template #noOrdersBlock>
-    <img [ngStyle]="{marginTop:'2rem',display:'block',width:'40%',marginLeft:'auto',marginRight:'auto'}" src="/assets/logo/emptyStock.png"/>
-</ng-template>
 
+<ng-template #elseBlockdata>
+    <div *ngIf="allOrders!=null && allOrders.length>0;else noOrdersBlock">
+        <table class="table mt-2 animate__animated animate__fadeIn">
+            <thead class="thead-dark">
+                <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Buyer</th>
+                <th scope="col">ProductImage</th>
+                <th scope="col">ProductName</th>
+                <th scope="col">DeliveryAddress</th>
+                <th scope="col">OrderedDate</th>
+                <th scope="col">ShippingDate</th>
+                <th scope="col">DeliveryDate</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">TotalAmount</th>
+                <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody *ngIf="allOrders!=null && allOrders.length>0">
+                    <tr *ngFor="let item of allOrders;index as i">
+                    <th scope="row">{{i+1}}</th>
+                    <td>{{item.name}}</td>
+                    <td><img [ngStyle]="{height:'50px',width:'30px'}" src="{{'/assets/productImages/'+item.images[0]}}"/></td>
+                    <td>{{item.productname}}</td>
+                    <td>{{item.address}}</td>
+                    <td>{{item.buying_date|slice:0:10}}</td>
+                    <td class="text-center"><span *ngIf="item.shiping_date==null;else dateBlock1"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock1>{{item.shiping_date | slice:0:10}}</ng-template></td>
+                    <td class="text-center"><span *ngIf="item.delivery_date==null;else dateBlock2"><i class="fa fa-circle-o-notch fa-spin text-primary"></i></span><ng-template #dateBlock2>{{item.delivery_date | slice:0:10}}</ng-template></td>
+                    <td class="text-success">{{item.quantity}}</td>
+                    <td class="text-success">&#8377;{{item.total_amount}}</td>
+                    <td *ngIf="item.shiping_date==null && item.delivery_date==null">
+                        <div [ngStyle]="{width:'200px'}" *ngIf="hasSetDate[item.buyid];else elseBlockDate">
+                            <form  #form="ngForm" (submit)="addDate(form.value)">
+                                <input type="hidden" [ngModel]="item.buyid" name="buyid" value={{item.buyid}}/>
+                                <small>Shipping Date:</small>
+                                <input type="date" #inp1="ngModel" class="form-control mt-2" name="shipping" [(ngModel)]="shipping" placeholder="Enter Shiping Date..."/>
+                                <h6 [ngStyle]="{fontSize:'12px',marginLeft:'110px'}" class="text-danger alert " *ngIf="inp1.touched && shipping!=null &&shipping.length==0" >Shiping Date Required<br></h6>
+                                <small>Delivery Date:</small>
+                                <input type="date" #inp2="ngModel" class="form-control mt-2" name="delivery" [(ngModel)]="delivery"  placeholder="Enter Delivery Date..."/>
+                                <h6 [ngStyle]="{fontSize:'12px',marginLeft:'110px'}" class="text-danger alert " *ngIf="inp2.touched && delivery!=null &&delivery.length==0" >Delivery Date Required<br></h6>
+                                <h6 [ngStyle]="{fontSize:'12px'}" class="text-danger alert text-center " *ngIf="ferror!=null &&ferror.length>00" >{{ferror}}<br></h6>
+                                <input type="submit" class="btn btn-primary mt-2" [ngStyle]="{display:'block',marginLeft:'auto',marginRight:'auto'}" value="Set">
+                            </form>
+                        </div>
+                        <ng-template #elseBlockDate>
+                            <i class="fa fa-edit text-primary" (click)="setDate(item.buyid)" [ngStyle]="{cursor:'pointer'}">SetDate</i>
+                        </ng-template>
+                    </td>
+                    </tr>
+            </tbody>
+        </table>    
+    </div>
+    <ng-template #noOrdersBlock>
+        <img [ngStyle]="{marginTop:'2rem',display:'block',width:'40%',marginLeft:'auto',marginRight:'auto'}" src="/assets/logo/emptyStock.png"/>
+    </ng-template>
+    
+    
+</ng-template>

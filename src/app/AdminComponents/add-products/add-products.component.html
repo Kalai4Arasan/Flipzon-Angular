@@ -1,0 +1,55 @@
+<div [ngStyle]="{marginTop:'1rem'}">
+    <h4>Add Product:</h4>
+    <hr/>
+    <!-- {{form.value|json}} -->
+    <form (submit)="handleSubmit(form.value)" #form="ngForm" [ngStyle]="{padding:'3rem'}" encType="multipart/form-data">
+        <div class="form-group">
+        <label for="ProductName">Product Name :</label>
+        <input [(ngModel)]="productname" type="text" class="form-control" name="productname" id="ProductName" placeholder="ex: Redmi Note 8"/>
+        <h6 *ngIf="productname!=null&&productname.length==0" class="text-danger alert text-center">Productname field Must be required</h6>
+    </div>
+    <div class="form-group">
+        <label for="Brand">Brand :</label>
+        <select [(ngModel)]="brand" (change)="setCategory(brand)" name="brand" class="form-control" id="Brand">
+        <option value="">---</option>
+        <option *ngFor="let item of brands" value={{item}}>{{item}}</option>
+        </select>
+        <h6 *ngIf="brand!=null&&brand.length==0" class="text-danger alert text-center">Brand field Must be required</h6>
+    </div>
+    <div class="form-group">
+        <label for="Category">Category :</label>
+        <select [(ngModel)]="category" name="category" class="form-control" id="category">
+            <option value="">---</option>
+            <option *ngFor="let item of filteredCategories" value={{item}}>{{item}}</option>
+            </select>
+            <h6 *ngIf="category!=null&&category.length==0" class="text-danger alert text-center">Category field Must be required</h6>
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description :</label>
+        <textarea  [ngModel]="description" type="text" rows="5" class="form-control" name="description" id="Description" placeholder="About your product..."></textarea>
+        <h6 *ngIf="description!=null&&description.length==0" class="text-danger alert text-center">Description field Must be required</h6>
+    </div>
+    <div class="form-group">
+        <label for="Rate">Rate :</label>
+        <input  [ngModel]="rate" type="text" class="form-control" name="rate" id="Rate" placeholder="Rate of this product"/>
+        <h6 *ngIf="rate!=null&&rate.length==0" class="text-danger alert text-center">Rate field Must be required</h6>
+    </div>
+    <div class="form-group">
+        <label for="Rating">Rating :</label>
+        <input  [(ngModel)]="rating" type="text" class="form-control" name="rating" id="Rating" placeholder="Initial Rating for this product"/>
+        <h6 *ngIf="rating!=null&&rating.length==0" class="text-danger alert text-center">Rating field Must be required</h6>
+    </div>
+    <div class="form-group">
+        <label for="Images">Images :</label>
+        <input type="hidden" name="imagesGroup" [ngModel]="images"/>
+        <input (change)="storeImages($event)"  type="file" class="form-control" [ngStyle]="{border:'none'}" name="images" id="Images" multiple />
+        <div *ngIf="images!=null&& images.length">
+            <p *ngFor="let item of images" class="badge badge-pill badge-primary p-2 m-2">{{item.name}}</p>
+        </div>
+        <h6 *ngIf="images!=null && images.length==0" class="text-danger alert text-center">Product Images Must be required</h6>
+    </div>
+    <input type="submit" class="btn btn-success" [ngStyle]="{display:'block',marginLeft:'auto',marginRight:'auto'}" value="Proceed"/>
+    
+    </form>
+</div>

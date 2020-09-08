@@ -24,6 +24,7 @@ import { AdminLoginComponent } from './AdminComponents/admin-login/admin-login.c
 import { AdminProductsComponent } from './AdminComponents/admin-products/admin-products.component';
 import { AdminOrdersComponent } from './AdminComponents/admin-orders/admin-orders.component';
 import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-category/admin-orders-category.component';
+import { AddProductsComponent } from './AdminComponents/add-products/add-products.component';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-cat
     AdminProductsComponent,
     AdminOrdersComponent,
     AdminOrdersCategoryComponent,
+    AddProductsComponent,
   ],
   imports: [
     BrowserModule,
