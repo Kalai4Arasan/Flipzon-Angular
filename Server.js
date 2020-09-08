@@ -229,12 +229,13 @@ app.get('/getOfferedProducts',(req,res)=>{
 app.post('/adminLogin',(req,res)=>{
   adminname=req.body.Admin.adminname
   password=req.body.Admin.password
+  console.log(req.body)
   client.query(`SELECT * FROM "Admin" WHERE  (admin_name=$1 AND password=$2) OR (admin_mail=$1 AND password=$2)`,[adminname,password],(err,result)=>{
       if(result.rows.length==0){
-        return res.send("")
+        return res.send([""])
       }
       token=jwt.sign(result.rows[0],secretKey)
-      return res.send(token)
+      return res.send([token])
   })
 })
 
@@ -282,6 +283,7 @@ app.get('/getBrands',(req,res)=>{
 
 
 app.post('/addBrand',(req,res)=>{
+  console.log(req.body)
   categories="{"
   for (let i=0;i<req.body.Brand.CategoryList.length;i++){
       if(i==req.body.Brand.CategoryList.length-1){

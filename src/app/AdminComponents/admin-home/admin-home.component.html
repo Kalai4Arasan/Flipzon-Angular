@@ -1,0 +1,59 @@
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <a class="navbar-brand text-white " routerLink="/admin"><img src="../assets/logo/cart.png" height="40" width="40" [ngStyle]="{borderRadius:'3rem',marginRight:'5px'}"/>Flipzon <span><small class="badge badge-pill badge-primary" [ngStyle]="{fontSize:'12px'}">admin</small></span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span><i class="fa fa-bars text-white"></i></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto links">
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/admin/addcategory']">
+                    Categories
+                </a>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/admin/addbrands']">
+                    Brands
+                </a>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/admin/products']">
+                    Products
+                </a>
+            </li>
+            <li class="nav-item dropdown text-white">
+                <a class="nav-link text-white" [routerLink]="['/admin/orders']">
+                    Orders
+                </a>
+            </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav links" >
+            <li class="nav-item dropdown text-white">
+                <span *ngIf="adminData==null;else elseBlock">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Account
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item " routerLinkActive="text-success" routerLink="/admin/login">Login</a>
+                        </div>
+                    </span>
+                <ng-template #elseBlock>
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{adminData.admin_name}}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item " routerLinkActive="text-success" routerLink="/admin/profile">Profile</a>
+                        <a class="dropdown-item " [ngStyle]="{cursor:'pointer'}" (click)="logout()">Logout</a>
+                        </div>
+                </ng-template>
+            </li>
+            </ul>
+            </div>
+        </div>
+        </nav>
+        <div class="m-4">
+            <router-outlet></router-outlet>
+        </div>
+    </div>

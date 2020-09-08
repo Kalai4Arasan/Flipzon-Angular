@@ -17,6 +17,13 @@ import { SuccessComponent } from './UserComponents/success/success.component';
 import { CartComponent } from './UserComponents/cart/cart.component';
 import { OrdersComponent } from './UserComponents/orders/orders.component';
 import { OrdersCategoryComponent } from './UserComponents/orders-category/orders-category.component';
+import { AddBrandComponent } from './AdminComponents/add-brand/add-brand.component';
+import { AddCategoryComponent } from './AdminComponents/add-category/add-category.component';
+import { AdminHomeComponent } from './AdminComponents/admin-home/admin-home.component';
+import { AdminLoginComponent } from './AdminComponents/admin-login/admin-login.component';
+import { AdminProductsComponent } from './AdminComponents/admin-products/admin-products.component';
+import { AdminOrdersComponent } from './AdminComponents/admin-orders/admin-orders.component';
+import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-category/admin-orders-category.component';
 
 
 @NgModule({
@@ -32,6 +39,13 @@ import { OrdersCategoryComponent } from './UserComponents/orders-category/orders
     CartComponent,
     OrdersComponent,
     OrdersCategoryComponent,
+    AddBrandComponent,
+    AddCategoryComponent,
+    AdminHomeComponent,
+    AdminLoginComponent,
+    AdminProductsComponent,
+    AdminOrdersComponent,
+    AdminOrdersCategoryComponent,
   ],
   imports: [
     BrowserModule,

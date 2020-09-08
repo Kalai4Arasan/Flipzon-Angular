@@ -1,0 +1,22 @@
+<div class="row mt-4 animate__animated animate__fadeIn">
+    <div class="col-md-6" [ngStyle]="{borderRight:'1px solid rgba(0,0,0,.1)'}">
+        <h4>Add Categories</h4><hr/>
+        <form [ngStyle]="{padding:'10rem'}" #form="ngForm" (submit)="handleSubmit(form.value)">
+            <input class="form-control" [(ngModel)]="category" #categoryInp="ngModel" name="category" placeholder="Enter Category..."/>
+            <small class="text-danger" [ngClass]="{'d-none':categoryInp.untouched||category.length>0}">Category field must be required<br/></small>
+            <small class="text-danger" *ngIf="ferror!=null&&ferror.length>0">{{ferror}}<br/></small>
+            <button class="btn btn-outline-info mt-3" ><i class="fa fa-plus"> Add</i></button>
+        </form>
+    </div>
+    <div *ngIf="isLoading;else Brands" class="col-md-6">
+        <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%'}"></i>
+    </div>
+    <ng-template #Brands>
+        <div [ngStyle]="{padding:'5rem'}">
+        <strong >Available Categories:</strong>
+        <ul class="list-group mt-3" [ngStyle]="{height:'350px',width:'300px',overflowY:'scroll'}" >
+                <li *ngFor="let item of categories;index as i " class="list-group-item link-hover font-size-bolder"  [ngStyle]="{cursor:'pointer',fontSize:'12px'}">{{i+1}}. {{item.category|uppercase}}</li>
+        </ul>
+        </div>
+    </ng-template>
+</div>

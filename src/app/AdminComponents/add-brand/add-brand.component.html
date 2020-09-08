@@ -1,0 +1,43 @@
+<div class="row mt-4 animate__animated animate__fadeIn">
+    <div class="col-md-6" [ngStyle]="{borderRight:'1px solid rgba(0,0,0,.1)'}">
+        <h4>Add Brands</h4><hr/>
+        <form [ngStyle]="{padding:'6rem'}" #form="ngForm" (submit)="handleSubmit(form.value)">
+            <label for="brand" class="font-weight-bolder mt-2">Brands:</label>
+            <input id="brand" class="form-control w-75" #brandInp="ngModel" [(ngModel)]="brand" name="brand" placeholder="Enter brands..."/>
+            <h6 [ngStyle]="{fontSize:'12px',marginLeft:'110px'}" class="text-danger alert " [ngClass]="{'d-none':brandInp.untouched || brand.length>0}">Brand Must be required<br></h6>
+            <label for="category" class="font-weight-bolder mt-2">Categories:</label>
+            <select id="category" class="form-control w-75" #categoryInp="ngModel" [(ngModel)]="category" name="category">
+             <option value="">---</option>
+                <option *ngFor="let item of categories" value={{item.category}}>{{item.category}}</option>
+            </select>
+            <span [ngStyle]="{display:'flex',marginLeft:'283px',marginTop:'-38px'}"><i class="fa fa-plus btn btn-success " (click)="handleCategory()" [ngStyle]="{height:'2.3rem',width:'3rem'}"></i></span>
+            <h6 [ngStyle]="{fontSize:'12px',marginLeft:'110px'}" class="text-danger alert " [ngClass]="{'d-none':categoryInp.untouched || category.length>0}" >Category must be required<br></h6>
+            <div class="m-2" *ngIf="categoryList!=null&&categoryList.length>0">
+                <p *ngFor="let item of categoryList" class="badge badge-pill badge-warning ml-2">{{item}} <i class="fa fa-times text-primary" (click)="cancelCategory(item)" [ngStyle]="{cursor:'pointer'}"></i></p>
+            </div>
+            <h6 [ngStyle]="{fontSize:'12px',marginLeft:'110px'}" class="text-danger alert " *ngIf="ferror!=null && ferror.length>0" >{{ferror}}<br></h6>
+            <button type="submit" class="btn btn-outline-info mt-3" [ngStyle]="{marginLeft:'130px'}" >Add</button>
+        </form>
+    </div>
+    <div *ngIf="isLoading;else Brands" class="col-md-6">
+        <i class="fa fa-spinner fa-spin" [ngStyle]="{position:'absolute',top:'50%',left:'50%'}"></i>
+    </div>
+    <ng-template #Brands>
+        <div [ngStyle]="{padding:'5rem',width:'500px'}">
+            <strong >Available Brands:</strong>
+            <div [ngStyle]="{height:'350px',overflowY:'scroll',marginTop:'1rem'}">
+            <table class="table mt-3" >
+                    <tr *ngFor="let item of brands | keyvalue">
+                        <td>
+                            <strong>{{item.key|uppercase}}</strong>
+                            <ul class="list-group">
+                                <li *ngFor="let item of brands[item.key];index as i" class="list-group-item">{{i+1}}. {{item|uppercase}} </li>                                        
+                            </ul>
+                        </td>
+                    </tr>
+            </table>
+    
+            </div>
+            </div>
+    </ng-template>
+</div>

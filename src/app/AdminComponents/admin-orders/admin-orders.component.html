@@ -1,0 +1,8 @@
+<div>
+    <h3>All Orders:</h3>
+    <hr/>
+    <div *ngIf="categories!=null && categories.length>0" class="btn-group">
+        <a *ngFor="let item of categories" [routerLinkActive]="['btn-primary']" [routerLink]="['/admin/orders/category',item.cid]"  class="btn btn-success">{{item.category}}</a>
+    </div>
+    <router-outlet></router-outlet>
+</div>
