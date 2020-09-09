@@ -56,25 +56,28 @@ export class AddBrandComponent implements OnInit {
             return this.ferror="this brand is already available "
           }
         }
-        this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand}).subscribe(data=>{
-          let Data={}
-          this.totalBrands.push(this.brand)
-          this._admin.Brands().subscribe(data=>{
-            for(let item of data){
-              if(item.brand in Data){
-                  Data[item.brand].push(item.category)
+        if(this.ferror==null || this.ferror.length==0){
+          this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand}).subscribe(data=>{
+            let Data={}
+            this.totalBrands.push(this.brand)
+            this._admin.Brands().subscribe(data=>{
+              for(let item of data){
+                if(item.brand in Data){
+                    Data[item.brand].push(item.category)
+                }
+                else{
+                    Data[item.brand]=[item.category]
+                }
               }
-              else{
-                  Data[item.brand]=[item.category]
-              }
-            }
-            this.brands=Data
-            this._admin.Categories().subscribe(data=>{
-              this.categories=data
+              this.brands=Data
+              this._admin.Categories().subscribe(data=>{
+                this.categories=data
+              })
+              this.isLoading=false
             })
-            this.isLoading=false
           })
-        })
+        }
+        
     }
     else{
       this.ferror="invalid input"

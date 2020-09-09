@@ -430,10 +430,6 @@ app.post('/allReviews',(req,res)=>{
   })
 })
 
-// client.query(`SELECT * FROM "Status"`,(err,result)=>{
-//   console.log(result.rows)
-// })
-
 
 
 app.listen(process.env.PORT|3000,(err)=>{

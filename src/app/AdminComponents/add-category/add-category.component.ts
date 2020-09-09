@@ -22,6 +22,7 @@ export class AddCategoryComponent implements OnInit {
   }
   handleSubmit(data){
     let valid=true
+    if(data.category.length>0){
     for(let item of this.categories){
       if(data.category.toLowerCase()===item.category.toLowerCase()){
         valid=false
@@ -37,6 +38,10 @@ export class AddCategoryComponent implements OnInit {
     else{
       this.ferror="Already Available..."
     }
+  }
+  else{
+    this.ferror="invalid input"
+  }
 
   }
 
