@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute,Router } from '@angular/router';
 import { ProductsService } from 'src/app/products.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { ProductsService } from 'src/app/products.service';
 })
 export class ShowProductsComponent implements OnInit {
 
-  constructor(private route:ActivatedRoute,private _productService:ProductsService) { }
+  constructor(private route:ActivatedRoute,private _productService:ProductsService,private _router:Router) { }
   category:string;
   productData=null;
   brands=null;

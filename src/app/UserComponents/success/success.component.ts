@@ -12,8 +12,8 @@ export class SuccessComponent implements OnInit {
   successData=null;
 
   ngOnInit(): void {
-    console.log(history.state)
-    this.successData=history.state
+    console.log(history.state[1])
+    this.successData=history.state[0]
   }
 
 }

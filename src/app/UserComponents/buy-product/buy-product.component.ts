@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { ProductsService } from '../../products.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as jwt_decode from 'jwt-decode';
+import { StripeToken, StripeSource, StripeCard } from 'stripe-angular';
 
 @Component({
   selector: 'app-buy-product',
@@ -18,7 +19,12 @@ export class BuyProductComponent implements OnInit {
   rate=null
   totalAmount=null
   isLoading=true
-  constructor(private _productService:ProductsService,private _route:ActivatedRoute,private _router:Router) { }
+  token=null
+  invalidError
+  cardReady
+
+  constructor(private _productService:ProductsService,private _route:ActivatedRoute,private _router:Router) {
+   }
 
   ngOnInit(): void {
       this.User=jwt_decode(sessionStorage.getItem('User'))
@@ -39,8 +45,13 @@ export class BuyProductComponent implements OnInit {
     console.log(this.quantity)
     return this.totalAmount=this.quantity*this.rate
   }
-  handleSubmit(){
-    console.log(this.quantity,this.address.length,this.totalAmount)
+
+  onStripeInvalid( error:Error ){
+    console.log('Validation Error', error)
+  }
+ 
+  setStripeToken( token:StripeToken ){
+    console.log('Stripe token', token)
     if(this.quantity<0 || this.quantity>20 || this.quantity==null || this.address.length==0 || this.totalAmount<this.rate || this.totalAmount<=0){
         this.ferror="Invalid Payement Values...."
     }
@@ -54,15 +65,24 @@ export class BuyProductComponent implements OnInit {
           'address':this.User.address,
           'quantity':this.quantity,
           'totalRate':this.totalAmount,
-          'buyingdate':new Date()
+          'buyingdate':new Date(),
+          'token':token.id
         }
-        
         this._productService.buyProduct(Data).subscribe(data=>{
           if(data.length>0){
-            this._router.navigate(['/user/success'],{state:Data})
+            this._router.navigate(['/user/success'],{state:[Data,data]})
           }
         })
     }
   }
+ 
+  setStripeSource( source:StripeSource ){
+    console.log('Stripe source', source)
+  }
+ 
+  onStripeError( error:Error ){
+    console.error('Stripe error', error)
+  }
+
 
 }

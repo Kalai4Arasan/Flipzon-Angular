@@ -103,24 +103,32 @@ app.get('/getOneProduct',(req,res)=>{
 })
 
 
-
+const stripe = require('stripe')("sk_test_51HPMbRBBOoJBqOTMje8ZGBb8ouAbQbmC0GVRNBRCL2TxAr2x4shDPRYmCe9iuAWWtHmTK1QuLRPtaTfNqQRxluuG00nHAek81R");
 app.post('/buyproduct',(req,res)=>{
   uid=req.body.Data.uid
   pid=req.body.Data.pid
   quantity=req.body.Data.quantity
   totalrate=req.body.Data.totalRate
   buyingdate=req.body.Data.buyingdate
-  // console.log(req.body)
-  client.query(`INSERT INTO "Buy"(uid,pid,quantity,total_amount,buying_date) VALUES($1,$2,$3,$4,$5)`,[uid,pid,quantity,totalrate,buyingdate],(err,result)=>{
-    if(err){
-      console.log(err)
-      return res.send([])
-    }
-    else{
-      return res.send([req.body.Data])
-    }
-  })
-  // return res.send([req.body.Data])
+  stripe.charges.create({
+      amount: parseInt(totalrate),
+      currency: 'inr',
+      source: req.body.Data.token,
+      capture: false,  
+  }).then(response => {
+        client.query(`INSERT INTO "Buy"(uid,pid,quantity,total_amount,buying_date) VALUES($1,$2,$3,$4,$5)`,[uid,pid,quantity,totalrate,buyingdate],(err,result)=>{
+        if(err){
+          return res.send([])
+        }
+        else{
+          return res.send([response])
+        }
+      })
+  }).catch(error => {
+    console.log(error)
+    return res.send([])
+  });
+
 })
 
 app.post('/addtocart',(req,res)=>{

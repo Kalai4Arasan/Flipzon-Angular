@@ -45,7 +45,7 @@ export class ShowOneProductComponent implements OnInit {
   }
   handleCart(product){
     if(!sessionStorage.getItem('User')){
-      this._router.navigate(['/login'])
+      this._router.navigate(['/login'],{state:{url:['/user/showoneproduct',this.productname]}})
     }
     else{
         this._productService.addCart(this.userData.id,product.pid).subscribe(result=>{
@@ -63,7 +63,7 @@ export class ShowOneProductComponent implements OnInit {
   }
   handleBuy(productname){
     if(!sessionStorage.getItem('User')){
-      return this._router.navigate(['/login'])
+      return this._router.navigate(['/login'],{state:{url:['/user/buyproduct',productname]}})
     }
     console.log(productname)
     this._router.navigate(['/user/buyproduct',productname])

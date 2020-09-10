@@ -11,8 +11,13 @@ export class LoginComponent implements OnInit {
   username=null;
   password=null;
   finalError=false;
-  constructor(private _userService:UserService,private _route:Router) { }
-
+  url=[""]
+  constructor(private _userService:UserService,private _route:Router) {
+    if(history.state.url){
+      this.url=history.state.url
+    }
+   }
+  
   ngOnInit(): void {
   }
 
@@ -24,7 +29,7 @@ export class LoginComponent implements OnInit {
     this._userService.userLogin(data).subscribe(result=>{
       if(result.length>0){
         sessionStorage.setItem('User',result[0])
-        this._route.navigate(['/home'])
+        this._route.navigate(this.url)
       }
       else{
         this.finalError=true

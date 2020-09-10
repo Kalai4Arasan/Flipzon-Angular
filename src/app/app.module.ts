@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
+import {StripeModule} from 'stripe-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -53,7 +54,8 @@ import { AddProductsComponent } from './AdminComponents/add-products/add-product
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    StripeModule.forRoot("pk_test_51HPMbRBBOoJBqOTMyqfUXOoSKbEAJD3vifwOOjkgloseK3oQbqIsW3QS5Icvv9BAgZIBREuDgszknnk71IWOZSTl00u4TOtrpu")
   ],
   providers: [],
   bootstrap: [AppComponent]

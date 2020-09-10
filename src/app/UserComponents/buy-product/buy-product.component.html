@@ -7,7 +7,7 @@
     <div class="col-md-6 m-4">
         <h3>Delivery Details:</h3>
         <hr/>
-        <form class="form" (submit)="handleSubmit()">
+        <form #form="ngForm" class="form" (submit)="stripeCard.createToken(form.value)">
             <label for="name" class="mt-4 font-weight-bolder">Buyer Name:</label>
             <input id="name" class="form-control"  value={{User.name}} readOnly/>
             <label for="pdname" class="mt-4 font-weight-bolder">Product Name</label>
@@ -24,6 +24,21 @@
             <label for="totrate" class="mt-4 font-weight-bolder"> Total Amount :</label>
             <strong id="totrate" [(ngModel)]="totalAmount" name="totalAmount" class="form-control alert alert-info">&#8377;{{totalAmount}}</strong>
             <h6 *ngIf="ferror" class="text-danger text-center mt-1" [ngStyle]="{fontSize:'14px'}">{{ferror}}<br/></h6>
+            <label for="payment" class="mt-4 font-weight-bolder">Card Details :</label>
+               <div id="Payment" class=" p-2 mb-4 form-control card">
+                    <stripe-card
+                        #stripeCard
+                        (catch) = "onStripeError($event)"
+                        [(invalid)] = "invalidError"
+                        (cardMounted) = "cardReady = 1"
+                        (tokenChange) = "setStripeToken($event)"
+                        (sourceChange) = "setStripeSource($event)"
+                    ></stripe-card>
+               </div>
+               <div *ngIf="invalidError" style="color:red;font-size:small;">
+                {{ invalidError.message }}
+              </div>
+              
             <button type="submit" class="btn btn-success" [ngStyle]="{marginLeft:'30%',marginRight:'30%'}">Proceed To Payment</button>
         </form> 
     </div>

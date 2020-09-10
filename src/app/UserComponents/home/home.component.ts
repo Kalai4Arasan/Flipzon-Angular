@@ -28,6 +28,10 @@ export class HomeComponent implements OnInit {
       this.cartCount=data[0]
     })
   }
+  loginPage(){
+    this._route.navigate(['/login'],{state:{url:[this._route.url]}})
+  }
+
   logout(){
     sessionStorage.removeItem("User")
     this.userData=null
