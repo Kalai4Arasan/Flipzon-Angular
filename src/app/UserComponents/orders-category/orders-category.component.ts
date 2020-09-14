@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductsService } from '../../products.service';
 import * as jwt_decode from 'jwt-decode';
 
@@ -10,7 +10,7 @@ import * as jwt_decode from 'jwt-decode';
 })
 export class OrdersCategoryComponent implements OnInit {
 
-  constructor(private _route:ActivatedRoute,private _productService:ProductsService) { }
+  constructor(private _route:ActivatedRoute,private _productService:ProductsService,private _router:Router) { }
   type:string;
   typeValue:Number;
   success=null;
@@ -41,7 +41,8 @@ export class OrdersCategoryComponent implements OnInit {
           }
           let dataCategory={
             'uid':this.userData.id,
-            'status':this.typeValue
+            'status':this.typeValue,
+            'jwtToken':sessionStorage.getItem("User")
           }
           // console.log(dataCategory)
           this._productService.getOrderedCategory(dataCategory).subscribe(data=>{
@@ -51,12 +52,18 @@ export class OrdersCategoryComponent implements OnInit {
                 for(let item of data){
                   this.reviewsId.push(item.buyid)
                 }
+              },err=>{
+                sessionStorage.removeItem("User")
+                this._router.navigate(['/notFound',err.statusText])
               })
               for(let item of this.Data){
                 this.hasReview[item.buyid]=false
               }
               this.isLoading=false
-          },err=>console.log(err))
+          },err=>{
+            sessionStorage.removeItem("User")
+            this._router.navigate(['/notFound',err.statusText])
+          })
         })
   }
   handleCancel(item){
@@ -64,16 +71,23 @@ export class OrdersCategoryComponent implements OnInit {
       if(res.length>0){
         this.getOrderedCategory()
       }
+    },err=>{
+      sessionStorage.removeItem("User")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
 
   getOrderedCategory(){
     let dataCategory={
       'uid':this.userData.id,
-      'status':this.typeValue
+      'status':this.typeValue,
+      'jwtToken':sessionStorage.getItem("User")
     };
       this._productService.getOrderedCategory(dataCategory).subscribe(data=>{
           this.Data=data
+      },err=>{
+        sessionStorage.removeItem("User")
+        this._router.navigate(['/notFound',err.statusText])
       });
     }
   setReview(id){
@@ -89,21 +103,31 @@ export class OrdersCategoryComponent implements OnInit {
     return this._productService.addReview(data).subscribe(result=>{
       let dataCategory={
         'uid':this.userData.id,
-        'status':this.typeValue
+        'status':this.typeValue,
+        'jwtToken':sessionStorage.getItem('User')
       }
       this._productService.getOrderedCategory(dataCategory).subscribe(data=>{
           this.Data=data
-          // console.log(this.Data)
+          console.log(this.Data)
           this._productService.getReviewId(this.userData.id).subscribe(data=>{
             for(let item of data){
               this.reviewsId.push(item.buyid)
             }
+          },err=>{
+            sessionStorage.removeItem("User")
+            this._router.navigate(['/notFound',err.statusText])
           })
           for(let item of this.Data){
             this.hasReview[item.buyid]=false
           }
           this.isLoading=false
-      },err=>console.log(err))
+      },err=>{
+        sessionStorage.removeItem("User")
+        this._router.navigate(['/notFound',err.statusText])
+      })
+    },err=>{
+      sessionStorage.removeItem("User")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
 }

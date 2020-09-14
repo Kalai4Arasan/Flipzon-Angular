@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../admin.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import * as jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-admin-orders-category',
@@ -9,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AdminOrdersCategoryComponent implements OnInit {
 
-  constructor(private _admin:AdminService,private _route:ActivatedRoute) { }
+  constructor(private _admin:AdminService,private _route:ActivatedRoute,private _router:Router) { }
   allOrders=null
   type=null;
   hasSetDate={}
@@ -18,6 +19,10 @@ export class AdminOrdersCategoryComponent implements OnInit {
   ferror=null;
   isLoading=true;
   ngOnInit(): void {
+    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound','UnAuthorized'])
+    }
     this._route.paramMap.subscribe(params=>{
       this.type=params.get('type')
       this.isLoading=true
@@ -50,8 +55,14 @@ export class AdminOrdersCategoryComponent implements OnInit {
                 this.hasSetDate[item.buyid]=false
               }
           }
+        },err=>{
+          sessionStorage.removeItem("Admin")
+          this._router.navigate(['/notFound',err.statusText])
         })
       }
+    },err=>{
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
 

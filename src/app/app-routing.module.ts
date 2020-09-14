@@ -18,12 +18,14 @@ import { AdminProductsComponent } from './AdminComponents/admin-products/admin-p
 import { AdminOrdersComponent } from './AdminComponents/admin-orders/admin-orders.component';
 import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-category/admin-orders-category.component';
 import { AddProductsComponent } from './AdminComponents/add-products/add-products.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 const routes: Routes = [
   {path:'',pathMatch:'full',redirectTo:'home'},
   {path:'home',component:HomeComponent},
   {path:'login',component:LoginComponent},
+  {path:'notFound/:status',component:NotFoundComponent},
   {path:'register',component:RegisterComponent},
   {path:'user',component:HomeComponent,children:[
     {path:'showproducts/:category',component:ShowProductsComponent},
@@ -53,7 +55,8 @@ const routes: Routes = [
     ]
     }
   ]
-  }
+  },
+  {path:"**",redirectTo:'notFound/No Page Found'}
  ];
 
 @NgModule({

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AdminService } from '../../admin.service';
+import * as jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-add-brand',
@@ -15,9 +17,13 @@ export class AddBrandComponent implements OnInit {
   category=null;
   categoryList=[];
   ferror=null;
-  constructor(private _admin:AdminService) { }
+  constructor(private _admin:AdminService,private _router:Router) { }
 
   ngOnInit(): void {
+    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound','UnAuthorized'])
+    }
     let Data={}
     this._admin.Brands().subscribe(data=>{
       for(let item of data){
@@ -57,7 +63,7 @@ export class AddBrandComponent implements OnInit {
           }
         }
         if(this.ferror==null || this.ferror.length==0){
-          this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand}).subscribe(data=>{
+          this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand,'jwtToken':sessionStorage.getItem("Admin")}).subscribe(data=>{
             let Data={}
             this.totalBrands.push(this.brand)
             this._admin.Brands().subscribe(data=>{
@@ -74,7 +80,13 @@ export class AddBrandComponent implements OnInit {
                 this.categories=data
               })
               this.isLoading=false
+            },err=>{
+              sessionStorage.removeItem("Admin")
+              this._router.navigate(['/notFound',err.statusText])
             })
+          },err=>{
+            sessionStorage.removeItem("Admin")
+            this._router.navigate(['/notFound',err.statusText])
           })
         }
         

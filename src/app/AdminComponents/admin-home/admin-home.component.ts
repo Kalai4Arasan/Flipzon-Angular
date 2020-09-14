@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as jwt_decode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { AdminService } from '../../admin.service';
 
 @Component({
   selector: 'app-admin-home',
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
 export class AdminHomeComponent implements OnInit {
   title = 'Flipzon-Angular';
   adminData=null;
-  constructor(private _route:Router) { }
+  constructor(private _route:Router,private _admin:AdminService) { }
 
   ngOnInit(): void {
     if(sessionStorage.getItem('Admin')){
@@ -20,10 +21,20 @@ export class AdminHomeComponent implements OnInit {
       this._route.navigate(['/adminlogin'])
     }
   }
+  // logout(){
+  //   sessionStorage.removeItem("Admin")
+  //   this.adminData=null
+  //   this._route.navigate(['/admin'])
+  // }
   logout(){
-    sessionStorage.removeItem("Admin")
-    this.adminData=null
-    this._route.navigate(['/admin'])
+    this._admin.adminLogout(sessionStorage.getItem('Admin')).subscribe(data=>{
+      sessionStorage.removeItem("Admin")
+      this.adminData=null
+      this._route.navigate(['/adminlogin'])
+    },err=>{
+      sessionStorage.removeItem("Admin")
+      this.adminData=null
+      this._route.navigate(['/notFound',err.statusText])
+    })
   }
-
 }

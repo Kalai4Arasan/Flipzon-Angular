@@ -23,7 +23,11 @@ export class CartComponent implements OnInit {
       this._productService.getCarts(this.userData.id).subscribe(data=>{
           this.cartData=data
           this.isLoading=false
-      },err=>console.log(err))
+      },err=>{
+        sessionStorage.removeItem("User")
+        console.log(err)
+        this._router.navigate(['/notFound',err.statusText])
+      })
     }
   }
   handleCart(item){
@@ -34,6 +38,9 @@ export class CartComponent implements OnInit {
   handleDelete(cid){
     this._productService.deleteCart(cid,this.userData.id).subscribe(data=>{
       this.cartData=data
+    },err=>{
+      sessionStorage.removeItem("User")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
 

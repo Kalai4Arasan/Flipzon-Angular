@@ -8,8 +8,8 @@ import { reviews } from './reviews';
   providedIn: 'root'
 })
 export class ProductsService {
-
-  constructor(private _http:HttpClient) { }
+  constructor(private _http:HttpClient) { 
+  }
   getProducts(category):Observable<products[]>{
       return this._http.get<products[]>('http://localhost:3000/getProducts',{params:{'category':category}})
   }
@@ -27,6 +27,7 @@ export class ProductsService {
       let Product={
         'uid':uid,
         'pid':pid,
+        'jwtToken':sessionStorage.getItem("User"),
       }
       return this._http.post<any>('http://localhost:3000/addtocart',{Product})
   }
@@ -36,7 +37,7 @@ export class ProductsService {
 
   getCarts(uid):Observable<any>{
       //console.log(uid)
-      return this._http.post<any>('http://localhost:3000/cart',{User:uid})
+      return this._http.post<any>('http://localhost:3000/cart',{User:uid,Data:sessionStorage.getItem("User")})
   }
   getCartCount(uid):Observable<any>{
     //console.log(uid)
@@ -45,7 +46,8 @@ export class ProductsService {
   deleteCart(cid,uid):Observable<any>{
     let Data={
       'cid':cid,
-      'uid':uid
+      'uid':uid,
+      'jwtToken':sessionStorage.getItem("User")
     }
     return this._http.post<any>('http://localhost:3000/deleteCart',{Data})
   }
@@ -53,12 +55,12 @@ export class ProductsService {
     return this._http.post<any>('http://localhost:3000/orderedproducts',{User:data})
   }
   cancelProduct(id):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/cancelProduct',{Product:{'buyid':id}})
+    return this._http.post<any>('http://localhost:3000/cancelProduct',{Product:{'buyid':id,'jwtToken':sessionStorage.getItem("User")}})
   }
   getReviewId(id):Observable<any>{
     return this._http.post<any>('http://localhost:3000/allReviews',{Data:id})
   }
   addReview(data):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/addReview',{Data:data})
+    return this._http.post<any>('http://localhost:3000/addReview',{Data:data,Token:sessionStorage.getItem('User')})
   }
 }

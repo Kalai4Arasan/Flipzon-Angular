@@ -24,6 +24,9 @@ export class BuyProductComponent implements OnInit {
   cardReady
 
   constructor(private _productService:ProductsService,private _route:ActivatedRoute,private _router:Router) {
+    if(!sessionStorage.getItem('User')){
+      this._router.navigate(['/login'])
+    }
    }
 
   ngOnInit(): void {
@@ -66,12 +69,16 @@ export class BuyProductComponent implements OnInit {
           'quantity':this.quantity,
           'totalRate':this.totalAmount,
           'buyingdate':new Date(),
-          'token':token.id
+          'token':token.id,
+          'jwtToken':sessionStorage.getItem('User'),
         }
         this._productService.buyProduct(Data).subscribe(data=>{
           if(data.length>0){
             this._router.navigate(['/user/success'],{state:[Data,data]})
           }
+        },err=>{
+          sessionStorage.removeItem("User")
+          this._router.navigate(['/notFound',err.statusText])
         })
     }
   }

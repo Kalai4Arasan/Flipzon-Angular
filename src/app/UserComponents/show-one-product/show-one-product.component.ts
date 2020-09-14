@@ -28,9 +28,11 @@ export class ShowOneProductComponent implements OnInit {
 
   ngOnInit(): void {
       this._route.paramMap.subscribe(params=>{
-        
         this.productname=params.get('productname')
+        this.productname=this.productname.replace(/%20/gi,' ')
+        console.log(this.productname)
         this._productService.getOneProduct(this.productname).subscribe(data=>{
+          console.log(data)
           this.product=data[0]
           this._productService.getReviews(this.product.pid).subscribe(data=>{
             this.reviews=data
@@ -58,6 +60,9 @@ export class ShowOneProductComponent implements OnInit {
             this.error="Already Added In Your Cart"
             this.success=null
           }
+        },err=>{
+          sessionStorage.removeItem("User")
+          this._router.navigate(['/notFound',err.statusText])
         })
     }
   }

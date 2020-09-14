@@ -12,4 +12,7 @@ export class UserService {
   userLogin(data):Observable<any>{
     return this._http.post<any>('http://localhost:3000/login',{User:data})
   }
+  userLogout(token):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/logout',{Data:{jwtToken:token}})
+  }
 }

@@ -34,6 +34,9 @@ export class LoginComponent implements OnInit {
       else{
         this.finalError=true
       }
+  },
+  err=>{
+    this._route.navigate(['/notFound',err.statusText])
   })
 
   }

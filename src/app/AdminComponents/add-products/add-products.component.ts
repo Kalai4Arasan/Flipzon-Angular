@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../admin.service';
 import { Router } from '@angular/router';
+import * as jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-add-products',
@@ -45,7 +46,10 @@ export class AddProductsComponent implements OnInit {
   
 
   ngOnInit(): void {
-    
+    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound','UnAuthorized'])
+    }
   }
   setCategory(brand){
     if(brand==null || brand.length==0){
@@ -71,6 +75,7 @@ export class AddProductsComponent implements OnInit {
             console.log(name,Product[name])
             formData.append(name, Product[name]);
         }
+    formData.append('jwtToken',sessionStorage.getItem("Admin"))
     this._admin.addProduct(formData).subscribe(data=>{
       return this._router.navigate(['/admin/products'])
     })

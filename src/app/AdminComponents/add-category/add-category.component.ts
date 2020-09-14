@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AdminService } from '../../admin.service';
+import * as jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-add-category',
@@ -8,13 +10,17 @@ import { AdminService } from '../../admin.service';
 })
 export class AddCategoryComponent implements OnInit {
 
-  constructor(private _admin:AdminService) { }
+  constructor(private _admin:AdminService,private _router:Router) { }
   category="";
   categories=[];
   ferror=null;
   isLoading=true;
 
   ngOnInit(): void {
+    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound','UnAuthorized'])
+    }
     this._admin.Categories().subscribe(data=>{
       this.categories=data
       this.isLoading=false
@@ -33,6 +39,9 @@ export class AddCategoryComponent implements OnInit {
     this._admin.addCategory(data).subscribe(result=>{
       this.categories=result
       this.category=""
+    },err=>{
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound',err.statusText])
     })
     }
     else{
