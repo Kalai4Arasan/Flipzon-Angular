@@ -29,38 +29,37 @@ export class ProductsService {
         'pid':pid,
         'jwtToken':sessionStorage.getItem("User"),
       }
-      return this._http.post<any>('http://localhost:3000/addtocart',{Product})
+      return this._http.post<any>('http://localhost:3000/addtocart',{Product,jwtToken:sessionStorage.getItem("User")})
   }
   buyProduct(Data):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/buyproduct',{Data})
+    return this._http.post<any>('http://localhost:3000/buyproduct',{Data,jwtToken:sessionStorage.getItem("User")})
   }
 
   getCarts(uid):Observable<any>{
       //console.log(uid)
-      return this._http.post<any>('http://localhost:3000/cart',{User:uid,Data:sessionStorage.getItem("User")})
+      return this._http.post<any>('http://localhost:3000/cart',{User:uid,jwtToken:sessionStorage.getItem("User")})
   }
   getCartCount(uid):Observable<any>{
     //console.log(uid)
-      return this._http.post<any>('http://localhost:3000/getCartCount',{User:uid})
+      return this._http.post<any>('http://localhost:3000/getCartCount',{User:uid,jwtToken:sessionStorage.getItem("User")})
   }
   deleteCart(cid,uid):Observable<any>{
     let Data={
       'cid':cid,
       'uid':uid,
-      'jwtToken':sessionStorage.getItem("User")
     }
-    return this._http.post<any>('http://localhost:3000/deleteCart',{Data})
+    return this._http.post<any>('http://localhost:3000/deleteCart',{Data,jwtToken:sessionStorage.getItem("User")})
   }
   getOrderedCategory(data):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/orderedproducts',{User:data})
+    return this._http.post<any>('http://localhost:3000/orderedproducts',{User:data,jwtToken:sessionStorage.getItem("User")})
   }
   cancelProduct(id):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/cancelProduct',{Product:{'buyid':id,'jwtToken':sessionStorage.getItem("User")}})
+    return this._http.post<any>('http://localhost:3000/cancelProduct',{Product:{'buyid':id},jwtToken:sessionStorage.getItem("User")})
   }
   getReviewId(id):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/allReviews',{Data:id})
+    return this._http.post<any>('http://localhost:3000/allReviews',{Data:id,jwtToken:sessionStorage.getItem("User")})
   }
   addReview(data):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/addReview',{Data:data,Token:sessionStorage.getItem('User')})
+    return this._http.post<any>('http://localhost:3000/addReview',{Data:data,jwtToken:sessionStorage.getItem("User")})
   }
 }

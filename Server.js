@@ -89,18 +89,7 @@ app.post('/login',(req,res)=>{
 //     next()
 // }
 
-app.post('/logout',(req,res)=>{
-    token=req.body.Data.jwtToken
-    if(UserToken.indexOf(token)==-1){
-      return res.sendStatus(403)
-    }
-    else{
-      jwt.verify(token,secretKey,(err,result)=>{
-        if(err){
-          return res.sendStatus(401)
-        }
-      })
-    }
+app.post('/logout',userToken,(req,res)=>{
     UserToken.splice(UserToken.indexOf(token),1)
     return res.send(["Success"])
 })
@@ -139,18 +128,7 @@ app.get('/getOneProduct',(req,res)=>{
 
 
 const stripe = require('stripe')("sk_test_51HPMbRBBOoJBqOTMje8ZGBb8ouAbQbmC0GVRNBRCL2TxAr2x4shDPRYmCe9iuAWWtHmTK1QuLRPtaTfNqQRxluuG00nHAek81R");
-app.post('/buyproduct',(req,res)=>{
-  token=req.body.Data.jwtToken
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
-
+app.post('/buyproduct',userToken,(req,res)=>{
         uid=req.body.Data.uid
         pid=req.body.Data.pid
         quantity=req.body.Data.quantity
@@ -180,24 +158,9 @@ app.post('/buyproduct',(req,res)=>{
           console.log(error)
           return res.send([])
         });
-
-      }
-    })
-  }
-  
 })
 
-app.post('/addtocart',(req,res)=>{
-  token=req.body.Product.jwtToken
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/addtocart',userToken,(req,res)=>{
         uid=req.body.Product.uid
         pid=req.body.Product.pid
         //console.log(buyingdate)
@@ -219,25 +182,11 @@ app.post('/addtocart',(req,res)=>{
             return res.send(["Error"])
           }
         })
-
-      }
-    })
-  }
   
   // return res.send([req.body.Data])
 })
 
-app.post('/cart',(req,res)=>{
-  token=req.body.Data
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/cart',userToken,(req,res)=>{
         uid=req.body.User
         client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Cart" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
           if(err){
@@ -247,24 +196,9 @@ app.post('/cart',(req,res)=>{
             return res.send(result.rows)
           }
         })
-      }
-    })
-  }
-  
 })
 
-app.post('/orderedProducts',(req,res)=>{
-  token=req.body.User.jwtToken
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      console.log(err,result)
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/orderedProducts',userToken,(req,res)=>{
         uid=req.body.User.uid
         status=req.body.User.status
         client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Buy" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND a.status=$2 AND d.cid=b.cid AND e.bid=b.bid`,[uid,status],(err,result)=>{
@@ -276,23 +210,9 @@ app.post('/orderedProducts',(req,res)=>{
             res.send(result.rows)
           }
         })
-      }
-    })
-  }
- 
 })
 
-app.post('/deleteCart',(req,res)=>{
-  token=req.body.Data.jwtToken
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/deleteCart',userToken,(req,res)=>{
         cid=req.body.Data.cid
         uid=req.body.Data.uid
         console.log(req.body)
@@ -306,31 +226,16 @@ app.post('/deleteCart',(req,res)=>{
             }
           })
         })
-      }
-    })
-  }
-  
-
 })
 
-app.post("/getCartCount",(req,res)=>{
+app.post("/getCartCount",userToken,(req,res)=>{
     uid=req.body.User
     client.query(`SELECT * FROM "Cart" WHERE uid=$1`,[uid],(err,result)=>{
       res.send([result.rowCount])
     })
 })
 
-app.post("/cancelProduct",(req,res)=>{
-  token=req.body.Product.jwtToken
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post("/cancelProduct",userToken,(req,res)=>{
         buyid=req.body.Product.buyid
         client.query(`Update "Buy" SET status=2 where buyid=$1`,[buyid],(err,result)=>{
           if(err){
@@ -343,9 +248,6 @@ app.post("/cancelProduct",(req,res)=>{
             return res.send([])
           }
         })
-      }
-    })
-  }
   
 })
 
@@ -362,6 +264,24 @@ app.get('/getOfferedProducts',(req,res)=>{
         res.send(result.rows)
   })
 })
+
+
+function userToken(req,res,next){
+  token=req.body.jwtToken
+  if(UserToken.indexOf(token)==-1){
+    return res.sendStatus(403)
+  }
+  else{
+    jwt.verify(token,secretKey,(err,result)=>{
+      if(err){
+        return res.sendStatus(401)
+      }
+      else{
+        next()
+      }
+    })
+  }
+}
 
 // app.post('/addReview',(req,res)=>{
 //   pid=req.body.Review.pid
@@ -388,18 +308,7 @@ app.post('/adminLogin',(req,res)=>{
   })
 })
 
-app.post('/adminLogout',(req,res)=>{
-  token=req.body.Data.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-    })
-  }
+app.post('/adminLogout',adminToken,(req,res)=>{
   AdminToken.splice(AdminToken.indexOf(token),1)
   return res.send(["Success"])
 })
@@ -418,18 +327,8 @@ app.get('/getCategories',(req,res)=>{
   })
 })
 
-app.post('/addCategory',(req,res)=>{
+app.post('/addCategory',adminToken,(req,res)=>{
   category=req.body.Category
-  token=req.body.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
         client.query(`INSERT INTO "Category"(category) VALUES($1)`,[category],(err,result)=>{
           if(err){
             return res.sendStatus(400)
@@ -451,9 +350,6 @@ app.post('/addCategory',(req,res)=>{
             console.log(err)
           }
         })
-        }
-      })
-      }
 })
 
 app.get('/getBrands',(req,res)=>{
@@ -471,17 +367,7 @@ app.get('/getBrands',(req,res)=>{
 })
 
 
-app.post('/addBrand',(req,res)=>{
-  token=req.body.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/addBrand',adminToken,(req,res)=>{
         categories="{"
         for (let i=0;i<req.body.Brand.CategoryList.length;i++){
             if(i==req.body.Brand.CategoryList.length-1){
@@ -516,12 +402,6 @@ app.post('/addBrand',(req,res)=>{
             console.log(err)
           }
         })
-
-      }
-    })
-  }
-  
-
 })
 
 
@@ -537,17 +417,7 @@ app.get("/allProducts",(req,res)=>{
   })
 })
 
-app.post('/addNewProduct',upload.array('imagesGroup',12),(req,res)=>{
-  token=req.body.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/addNewProduct',upload.array('imagesGroup',12),adminToken,(req,res)=>{
         productname=req.body.productname
         description=req.body.description
         rate=req.body.rate
@@ -585,26 +455,10 @@ app.post('/addNewProduct',upload.array('imagesGroup',12),(req,res)=>{
             })
           })
         })
-
-      }
-    })
-  }
-  
-  
 })
 
-app.post('/allOrders',(req,res)=>{
-  cid=req.body.cid
-  token=req.body.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/allOrders',adminToken,(req,res)=>{
+        cid=req.body.cid
         client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Buy" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND d.cid=b.cid AND c.id=a.uid AND e.bid=b.bid AND b.cid=$1`,[cid],(err,result)=>{
           if(err){
               return res.sendStatus(400)
@@ -614,23 +468,9 @@ app.post('/allOrders',(req,res)=>{
             return res.send(result.rows)
           }
         })
-      }
-    })
-  }
-  
 })
 
-app.post('/addDates',(req,res)=>{
-  token=req.body.jwtToken
-  if(AdminToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/addDates',userToken,(req,res)=>{
         buyid=req.body.Dates.buyid
         shipping=req.body.Dates.shipping
         delivery=req.body.Dates.delivery
@@ -646,24 +486,10 @@ app.post('/addDates',(req,res)=>{
             console.log(err)
           }
         })
-      }
-    })
-  }
   
 })
 
-app.post('/addReview',(req,res)=>{
-  token=req.body.Token
-  if(UserToken.indexOf(token)==-1){
-    return res.sendStatus(403)
-  }
-  else{
-    jwt.verify(token,secretKey,(err,result)=>{
-
-      if(err){
-        return res.sendStatus(401)
-      }
-      else{
+app.post('/addReview',userToken,(req,res)=>{
         uid=req.body.Data.uid
         pid=req.body.Data.pid
         buyid=req.body.Data.buyid
@@ -682,12 +508,6 @@ app.post('/addReview',(req,res)=>{
             console.log(err)
           }
         })
-
-      }
-    })
-  }
-  
-
 })
 
 app.post('/getReviews',(req,res)=>{
@@ -722,6 +542,23 @@ app.post('/allReviews',(req,res)=>{
     }
   })
 })
+
+function adminToken(req,res,next){
+  token=req.body.jwtToken
+  if(AdminToken.indexOf(token)==-1){
+    return res.sendStatus(403)
+  }
+  else{
+    jwt.verify(token,secretKey,(err,result)=>{
+      if(err){
+        return res.sendStatus(401)
+      }
+      else{
+        next()
+      }
+    })
+  }
+}
 
 
 

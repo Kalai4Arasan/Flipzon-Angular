@@ -34,6 +34,9 @@ export class AdminOrdersCategoryComponent implements OnInit {
             }
         }
         this.isLoading=false
+      },err=>{
+        sessionStorage.removeItem("Admin")
+        this._router.navigate(['/notFound',err.statusText])
       })
     })
   }

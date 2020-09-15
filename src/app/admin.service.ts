@@ -12,7 +12,7 @@ export class AdminService {
     return this._http.post<any>('http://localhost:3000/adminLogin',{Admin:data})
   }
   adminLogout(token):Observable<any>{
-    return this._http.post<any>('http://localhost:3000/adminLogout',{Data:{jwtToken:token}})
+    return this._http.post<any>('http://localhost:3000/adminLogout',{jwtToken:token})
   }
   Brands():Observable<any>{
     return this._http.get<any>('http://localhost:3000/getBrands')
