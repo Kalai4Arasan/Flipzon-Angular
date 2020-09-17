@@ -10,8 +10,10 @@ export class AdminOrdersComponent implements OnInit {
 
   constructor(private _admin:AdminService) { }
   categories=null
+  adminData=null
   ngOnInit(): void {
-    this._admin.Categories().subscribe(data=>{
+    this.adminData=this._admin.adminData()
+    this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
       this.categories=data
     })
   }

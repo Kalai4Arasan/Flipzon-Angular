@@ -14,20 +14,11 @@ export class AdminHomeComponent implements OnInit {
   constructor(private _route:Router,private _admin:AdminService) { }
 
   ngOnInit(): void {
-    if(sessionStorage.getItem('Admin')){
-      this.adminData=(jwt_decode(sessionStorage.getItem('Admin')))
-      }
-    else{
-      this._route.navigate(['/adminlogin'])
-    }
+    this.adminData=this._admin.adminData()
   }
-  // logout(){
-  //   sessionStorage.removeItem("Admin")
-  //   this.adminData=null
-  //   this._route.navigate(['/admin'])
-  // }
+
   logout(){
-    this._admin.adminLogout(sessionStorage.getItem('Admin')).subscribe(data=>{
+    this._admin.adminLogout(sessionStorage.getItem('Admin'),this.adminData.admin_id).subscribe(data=>{
       sessionStorage.removeItem("Admin")
       this.adminData=null
       this._route.navigate(['/adminlogin'])

@@ -12,8 +12,10 @@ export class AdminProductsComponent implements OnInit {
   constructor(private _admin:AdminService) { }
   isLoading=true
   products=null;
+  adminData=null;
   ngOnInit(): void {
-    this._admin.allProducts().subscribe(data=>{
+    this.adminData=this._admin.adminData()
+    this._admin.allProducts(this.adminData.admin_id).subscribe(data=>{
       this.products=data
       this.isLoading=false
     })

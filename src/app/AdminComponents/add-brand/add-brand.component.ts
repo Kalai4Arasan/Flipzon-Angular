@@ -17,15 +17,13 @@ export class AddBrandComponent implements OnInit {
   category=null;
   categoryList=[];
   ferror=null;
+  adminData=null;
   constructor(private _admin:AdminService,private _router:Router) { }
 
   ngOnInit(): void {
-    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
-      sessionStorage.removeItem("Admin")
-      this._router.navigate(['/notFound','UnAuthorized'])
-    }
     let Data={}
-    this._admin.Brands().subscribe(data=>{
+    this.adminData=this._admin.adminData()
+    this._admin.Brands(this.adminData.admin_id).subscribe(data=>{
       for(let item of data){
         this.totalBrands.push(item.brand)
         if(item.brand in Data){
@@ -36,10 +34,13 @@ export class AddBrandComponent implements OnInit {
         }
       }
       this.brands=Data
-      this._admin.Categories().subscribe(data=>{
+      this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
         this.categories=data
       })
       this.isLoading=false
+    },err=>{
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
   handleCategory(){
@@ -63,10 +64,10 @@ export class AddBrandComponent implements OnInit {
           }
         }
         if(this.ferror==null || this.ferror.length==0){
-          this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand,'jwtToken':sessionStorage.getItem("Admin")}).subscribe(data=>{
+          this._admin.addBrand({'CategoryList':this.categoryList,'brand':this.brand,'jwtToken':sessionStorage.getItem("Admin")},this.adminData.admin_id).subscribe(data=>{
             let Data={}
             this.totalBrands.push(this.brand)
-            this._admin.Brands().subscribe(data=>{
+            this._admin.Brands(this.adminData.admin_id).subscribe(data=>{
               for(let item of data){
                 if(item.brand in Data){
                     Data[item.brand].push(item.category)
@@ -76,7 +77,7 @@ export class AddBrandComponent implements OnInit {
                 }
               }
               this.brands=Data
-              this._admin.Categories().subscribe(data=>{
+              this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
                 this.categories=data
               })
               this.isLoading=false

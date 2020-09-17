@@ -15,15 +15,16 @@ export class AddCategoryComponent implements OnInit {
   categories=[];
   ferror=null;
   isLoading=true;
+  adminData=null
 
   ngOnInit(): void {
-    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
-      sessionStorage.removeItem("Admin")
-      this._router.navigate(['/notFound','UnAuthorized'])
-    }
-    this._admin.Categories().subscribe(data=>{
+    this.adminData=this._admin.adminData()
+    this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
       this.categories=data
       this.isLoading=false
+    },err=>{
+      sessionStorage.removeItem("Admin")
+      this._router.navigate(['/notFound',err.statusText])
     })
   }
   handleSubmit(data){
@@ -36,7 +37,7 @@ export class AddCategoryComponent implements OnInit {
     }
     if(valid){
       this.ferror=null;
-    this._admin.addCategory(data).subscribe(result=>{
+    this._admin.addCategory(data,this.adminData.admin_id).subscribe(result=>{
       this.categories=result
       this.category=""
     },err=>{

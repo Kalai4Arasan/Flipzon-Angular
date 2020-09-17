@@ -18,15 +18,13 @@ export class AdminOrdersCategoryComponent implements OnInit {
   delivery=null;
   ferror=null;
   isLoading=true;
+  adminData=null;
   ngOnInit(): void {
-    if(jwt_decode(sessionStorage.getItem("Admin")).admin_name==null || jwt_decode(sessionStorage.getItem("Admin")).admin_name.length==0 ){
-      sessionStorage.removeItem("Admin")
-      this._router.navigate(['/notFound','UnAuthorized'])
-    }
+    this.adminData=this._admin.adminData()
     this._route.paramMap.subscribe(params=>{
       this.type=params.get('type')
       this.isLoading=true
-      this._admin.getOrderedCategory(this.type).subscribe(data=>{
+      this._admin.getOrderedCategory(this.type,this.adminData.admin_id).subscribe(data=>{
         this.allOrders=data
         for(let item of this.allOrders){
             if(item.shiping_date==null && item.delivery_date==null){
@@ -49,9 +47,9 @@ export class AdminOrdersCategoryComponent implements OnInit {
     if(new Date(data.shipping).getTime()>new Date(data.delivery).getTime()){
         return this.ferror="Dates are invalid"
     }
-    this._admin.addDates(data).subscribe(data=>{
+    this._admin.addDates(data,this.adminData.admin_id).subscribe(data=>{
       if(data.length>0){
-        this._admin.getOrderedCategory(this.type).subscribe(data=>{
+        this._admin.getOrderedCategory(this.type,this.adminData.admin_id).subscribe(data=>{
           this.allOrders=data
           for(let item of this.allOrders){
               if(item.shiping_date==null && item.delivery_date==null){

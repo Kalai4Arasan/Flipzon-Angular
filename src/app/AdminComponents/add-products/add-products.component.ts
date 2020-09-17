@@ -19,10 +19,11 @@ export class AddProductsComponent implements OnInit {
   rate=null;
   images=null;
   filteredCategories=null;
+  adminData=null;
   brandsCategory={}
   constructor(private _admin:AdminService,private _router:Router) { 
-    
-    this._admin.Brands().subscribe(data=>{
+    this.adminData=this._admin.adminData()
+    this._admin.Brands(this.adminData.admin_id).subscribe(data=>{
       for(let item of data){
         this.brands.add(item.brand)
         if(Object.keys(this.brandsCategory).indexOf(item.brand)==-1){
@@ -32,7 +33,7 @@ export class AddProductsComponent implements OnInit {
           this.brandsCategory[item.brand].push(item.category)
         }
       }
-      this._admin.Categories().subscribe(data=>{
+      this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
         this.categories=[]
         for(let item of data){
           //console.log(item)
@@ -76,6 +77,7 @@ export class AddProductsComponent implements OnInit {
             formData.append(name, Product[name]);
         }
     formData.append('jwtToken',sessionStorage.getItem("Admin"))
+    formData.append('aid',this.adminData.admin_id)
     this._admin.addProduct(formData).subscribe(data=>{
       return this._router.navigate(['/admin/products'])
     })
