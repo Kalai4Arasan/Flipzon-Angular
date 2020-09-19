@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  admin_id   Int     @default(dbgenerated()) @id
+  admin_name String
+  admin_mail String
+  password   String
+  address    String
+  phone      String?
+}
+
+ //model AdminSessions {
+   //aid         Int
+   //token       String
+   //logged_date String
+ //}
+
+model Brands {
+  brand      String
+  bid        Int      @default(dbgenerated()) @id
+  categories String[]
+}
+
+model Buy {
+  buyid         Int       @default(dbgenerated()) @id
+  uid           Int
+  pid           Int
+  buying_date   DateTime
+  shiping_date  DateTime?
+  delivery_date DateTime?
+  total_amount  Float
+  quantity      Int
+  status        Int       @default(1)
+}
+
+model Cart {
+  cart_id Int @default(dbgenerated()) @id
+  uid     Int
+  pid     Int
+}
+
+model Category {
+  category String
+  cid      Int    @default(dbgenerated()) @id
+}
+
+model Products {
+  pid         Int      @default(dbgenerated()) @id
+  productname String
+  rate        Float
+  description String
+  discount    Float    @default(0)
+  rating      Float
+  cid         Int
+  bid         Int
+  images      String[]
+}
+
+model Reviews {
+  rid           Int      @default(dbgenerated()) @id
+  uid           Int
+  pid           Int
+  review        String
+  rating        Float
+  buyid         Int
+  uploaded_date DateTime
+}
+
+model Status {
+  sid        Int    @default(dbgenerated()) @id
+  statusName String
+}
+
+model User {
+  name     String
+  email    String
+  address  String
+  phone    Int
+  password String
+  id       Int    @default(dbgenerated()) @id
+}
+
+ //model UserSessions {
+   //uid         Int
+   //token       String
+   //logged_date String
+ //}
