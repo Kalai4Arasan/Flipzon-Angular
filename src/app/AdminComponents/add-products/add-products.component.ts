@@ -27,10 +27,10 @@ export class AddProductsComponent implements OnInit {
       for(let item of data){
         this.brands.add(item.brand)
         if(Object.keys(this.brandsCategory).indexOf(item.brand)==-1){
-          this.brandsCategory[item.brand]=[item.category]
+          this.brandsCategory[item.brand]=item.categories
         }
         else{
-          this.brandsCategory[item.brand].push(item.category)
+          this.brandsCategory[item.brand].push(item.categories)
         }
       }
       this._admin.Categories(this.adminData.admin_id).subscribe(data=>{

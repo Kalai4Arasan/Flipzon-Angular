@@ -1,5 +1,7 @@
+require('dotenv').config()
 const express=require("express")
 const app=express()
+
 
 /* Body parser*/
 const bodyparser=require("body-parser")

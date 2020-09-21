@@ -1,35 +1,48 @@
-
-
-const client=require("../db-connect/dbconnect").dbconnect()
+const prisma=require("../db-connect/dbconnect").dbconnect()
 const mainjs=require('../app')
+
 const deleteUserToken=mainjs.deleteUserToken
 const jwt=require('jsonwebtoken')
-const secretKey="flipzon"
+const secretKey=process.env.SECRET_KEY
 
-exports.userRegister=(req,res)=>{
+
+exports.userRegister=async (req,res)=>{
     name=req.body.User.name
     email=req.body.User.email
     address=req.body.User.address
     phone=req.body.User.phone
     password=req.body.User.password
   
-    client.query(`SELECT * FROM "User" WHERE  (name=$1) OR (email=$2)`,[name,email],(err,result)=>{
-          if(err){
-            return res.sendStatus(400)
-          }   
-          if(result.rows.length==0){
-            client.query(`INSERT INTO "User"(name,email,address,phone,password) values($1,$2,$3,$4,$5)`,[name,email,address,phone,password],(err,result)=>{
-              if(err){
-                return res.sendStatus(400)
-              }     
-              if(result.rowCount>0){
-                  token=jwt.sign(req.body.User,secretKey,{expiresIn:2700})
-                  client.query(`INSERT INTO "UserSessions" VALUES($1,$2,$3)`,[result.id,token,new Date().toGMTString()],(err,result)=>{
-                    if(err){
-                      return res.sendStatus(400)
+    await prisma.user.findMany({
+      where:{
+        OR:[{name:name},{email:email}]
+      }
+    }).then(async result=>{
+          if(result.length==0){
+            await prisma.user.create({
+              data:{
+                name:name,
+                email:email,
+                address:address,
+                phone:phone,
+                password:password
+              }
+            }).then(async result=>{
+              if(result!=null){
+                data={
+                  "name":name,
+                  "email":email,
+                  "address":address
+                }
+                  token=jwt.sign(data,secretKey,{expiresIn:2700})
+                  await prisma.userSessions.create({
+                    data:{
+                      uid:result[0].id,
+                      token:token,
+                      logged_date:new Date().toGMTString()
                     }
-                    return res.send([token])
-                  })
+                  }).catch(err=>{return res.sendStatus(400)})
+                  return res.send([token])
                 }
             })
           }
@@ -39,68 +52,113 @@ exports.userRegister=(req,res)=>{
       })
   }
 
-exports.userLogin=(req,res)=>{
-    username=req.body.User.username
-    password=req.body.User.password
-    client.query(`SELECT * FROM "User" WHERE  (name=$1 AND password=$2) OR (email=$1 AND password=$2)`,[username,password],(err,result)=>{
-      if(err){
-        return res.sendStatus(400)
-      }   
-      if(result.rows.length==0){
-          return res.send([""])
-        }
-        else{
-        token=jwt.sign(result.rows[0],secretKey,{expiresIn:2700})
-        client.query(`INSERT INTO "UserSessions" VALUES($1,$2,$3)`,[result.rows[0].id,token,new Date().toGMTString()],(err,result)=>{
-          if(err){
-            
-            return res.sendStatus(400)
+exports.userLogin=async (req,res)=>{
+      username=req.body.User.username
+      password=req.body.User.password
+      await prisma.user.findMany({
+          where:{
+              password:password,
+              OR:[{name:username},{email:username}]
+              },
+          select:{
+              id:true,
+              name:true,
+              email:true,
+              address:true,
           }
-          return res.send([token])
+      }).then(async result=>{
+        token=jwt.sign(result[0],secretKey,{expiresIn:2700})
+        await prisma.userSessions.create({
+          data:{
+            uid:result[0].id,
+            token:token,
+            logged_date:new Date().toGMTString()
+          }
+        }).catch(err=>{console.log(err);return res.sendStatus(400)})
+        return res.send([token])
+      }).catch(err=>{console.log(err);return res.sendStatus(400)})
+      
+}
+
+exports.userLogout=async (req,res)=>{
+    await prisma.userSessions.deleteMany({
+      where:{
+        token:req.body.jwtToken
+      }
+    }).then(data=>{return res.send(['Success'])}).catch(err=>{return res.sendStatus(400)})
+}
+
+exports.getProducts=async (req,res)=>{
+    categoryData=req.query.category
+    totalData=[]
+    await prisma.category.findMany({
+      where:{
+          category:categoryData,
+      },
+      select:{
+          cid:true,
+          category:true,
+      }
+  }).then(async category=>{
+    await prisma.products.findMany({
+        where:{
+            cid:category[0].cid
+            }
+    }).then(async data=>{
+      for(let item of data){
+        item.category=category[0].category
+        await prisma.brands.findOne({
+          where:{
+            bid:item.bid
+          }
+        }).then(result=>{
+          if(result!=null){
+          item.brand=result.brand
+          }
         })
       }
+      totalData=data
     })
-}
-
-exports.userLogout=(req,res)=>{
-    client.query(`DELETE FROM "UserSessions" WHERE token=$1`,[req.body.jwtToken],(err,result)=>{
-      if(err){
-        
-        return res.send(400)
-      }
-      return res.send(["Success"])
-    })
-}
-
-exports.getProducts=(req,res)=>{
-    category=req.query.category
-    client.query(`SELECT p.pid,p.productname,p.discount,p.rate,p.description,p.rating,c.category,b.brand,p.images FROM "Products" AS p,"Category" AS c,"Brands" AS b WHERE p.cid=c.cid AND p.bid=b.bid AND p.cid=(SELECT cid FROM "Category" WHERE category=$1)`,[category],(err,result)=>{
-      // console.log(result)  
-      if(err){
-          return res.sendStatus(400)
-        }  
-          if(result.rowCount==0){
-            return res.send([])
-          }
-          return res.send(result.rows)
-    })
+  })
+  return res.send(totalData)
   }
 
-  exports.getOneProduct=(req,res)=>{
+  exports.getOneProduct=async (req,res)=>{
     productname=req.query.productname
-    client.query(`SELECT p.pid,p.productname,p.discount,p.rate,p.description,p.rating,c.category,b.brand,p.images FROM "Products" AS p,"Category" AS c,"Brands" AS b WHERE p.cid=c.cid AND p.bid=b.bid AND p.productname=$1`,[productname],(err,result)=>{
-          if(err){
-            return res.sendStatus(400)
-          } 
-          if(result.rowCount==0){
-            return res.send([])
-          }
-          return res.send(result.rows)
+    await prisma.products.findMany({
+      where:{
+        productname:productname,
+      }
+    }).then(async data=>{
+      cid=data[0].cid
+      bid=data[0].bid
+      await prisma.category.findOne({
+        where:{
+          cid:cid
+        },
+        select:{
+          category:true
+        }
+      }).then(category=>{
+        data[0].category=category.category
+      })
+      await prisma.brands.findOne({
+        where:{
+          bid:bid
+        },
+        select:{
+          brand:true
+        }
+      }).then(brand=>{
+        data[0].brand=brand.brand
+      })
+
+      return res.send(data)
     })
   }
 
   const stripe = require('stripe')("sk_test_51HPMbRBBOoJBqOTMje8ZGBb8ouAbQbmC0GVRNBRCL2TxAr2x4shDPRYmCe9iuAWWtHmTK1QuLRPtaTfNqQRxluuG00nHAek81R");
-  exports.buyProduct=(req,res)=>{
+  exports.buyProduct=async (req,res)=>{
     uid=req.body.Data.uid
     pid=req.body.Data.pid
     quantity=req.body.Data.quantity
@@ -111,17 +169,17 @@ exports.getProducts=(req,res)=>{
         currency: 'inr',
         source: req.body.Data.token,
         capture: false,  
-    }).then(response => {
+    }).then(async response => {
         if(response.status=="succeeded"){
-          client.query(`INSERT INTO "Buy"(uid,pid,quantity,total_amount,buying_date) VALUES($1,$2,$3,$4,$5)`,[uid,pid,quantity,totalrate,buyingdate],(err,result)=>{
-            if(err){
-              return res.sendStatus(400)
-            } 
-            else{
-              return res.send([response])
-            }
-        })
-        console.log(response.status)
+            await prisma.buy.create({
+              data:{
+                uid:uid,
+                pid:pid,
+                quantity:quantity,
+                total_amount:totalrate,
+                buying_date:buyingdate
+              }
+            }).then(data=>{console.log(data);return res.send([response])}).catch(err=>{return res.sendStatus(400)})
       }
       else{
         console.log(response.status)
@@ -132,139 +190,228 @@ exports.getProducts=(req,res)=>{
     });
 }
 
-exports.addToCart=(req,res)=>{
+exports.addToCart=async (req,res)=>{
     uid=req.body.Product.uid
     pid=req.body.Product.pid
     //console.log(buyingdate)
-    client.query(`SELECT * FROM "Cart" WHERE uid=$1 AND pid=$2`,[uid,pid],(err,result)=>{
-        if(err){
-          return res.sendStatus(400)
-        } 
-      if(result.rowCount==0){
-        client.query(`INSERT INTO "Cart"(uid,pid) VALUES($1,$2)`,[uid,pid],(err,result)=>{
-          if(err){
-            return res.sendStatus(400)
-          } 
-          else{
-            return res.send([req.body.Data])
+    await prisma.cart.findMany({
+      where:{
+        uid:uid,
+        pid:pid
+      }
+    }).then(async data=>{
+      if(data.length==0){
+        await prisma.cart.create({
+          data:{
+            uid:uid,
+            pid:pid
           }
+        }).then(data=>{return res.send([req.body.Data])})
+      }
+      else{
+        return res.send(['Error'])
+      }
+    })
+}
+
+exports.cart=async (req,res)=>{
+    uid=req.body.User
+    await prisma.cart.findMany({
+      where:{
+        uid:6,
+      }
+    }).then(async data=>{
+      for(let item of data){
+        await prisma.user.findOne({
+          where:{
+            id:item.uid
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.products.findOne({
+          where:{
+            pid:item.pid
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.category.findOne({
+          where:{
+            cid:item.cid
+          },
+          select:{
+            category:true
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.brands.findOne({
+          where:{
+            bid:item.bid
+          },
+          select:{
+            brand:true
+          }
+        }).then(result=>{
+          Object.assign(item,result)
         })
       }
-      else{
-        return res.send(["Error"])
-      }
+      return res.send(data)
     })
 }
 
-exports.cart=(req,res)=>{
-    uid=req.body.User
-    client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Cart" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
-      if(err){
-        deleteUserToken(req.body.uid)
-        return res.sendStatus(400)
-      } 
-      else{
-        return res.send(result.rows)
-      }
-    })
-}
 
-exports.getOrderedProducts=(req,res)=>{
+exports.getOrderedProducts=async (req,res)=>{
     uid=req.body.User.uid
     status=req.body.User.status
-    client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Buy" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND a.status=$2 AND d.cid=b.cid AND e.bid=b.bid`,[uid,status],(err,result)=>{
-      if(err){
-          return res.sendStatus(400)
-        } 
-      else{
-        //console.log(result.rows)
-        res.send(result.rows)
+    await prisma.buy.findMany({
+      where:{
+        uid:uid,
+        status:status
       }
+    }).then(async data=>{
+      for(let item of data){
+        await prisma.user.findOne({
+          where:{
+            id:item.uid
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.products.findOne({
+          where:{
+            pid:item.pid
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.category.findOne({
+          where:{
+            cid:item.cid
+          },
+          select:{
+            category:true
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+  
+        await prisma.brands.findOne({
+          where:{
+            bid:item.bid
+          },
+          select:{
+            brand:true
+          }
+        }).then(result=>{
+          Object.assign(item,result)
+        })
+      }
+      return res.send(data)
     })
 }
 
-exports.deleteCart=(req,res)=>{
+exports.deleteCart=async (req,res)=>{
     cid=req.body.Data.cid
     uid=req.body.Data.uid
     console.log(req.body)
-    client.query(`DELETE FROM "Cart" WHERE cart_id=$1`,[cid],(err,result)=>{
-      client.query(`SELECT a.*,b.*,c.*,d.*,e.* FROM "Cart" AS a,"Products" AS b,"User" AS c,"Category" AS d,"Brands" AS e where a.pid=b.pid AND a.uid=c.id AND a.uid=$1 AND d.cid=b.cid AND e.bid=b.bid`,[uid],(err,result)=>{
-        if(err){
-          return res.sendStatus(400)
-        } 
-        else{
-          res.send(result.rows)
-        }
-      })
-    })
+    await prisma.cart.deleteMany({
+      where:{
+        cart_id:cid
+      }
+    }).then(data=>{this.cart(req,res)})
 }
 
-exports.cartCount=(req,res)=>{
+exports.cartCount=async (req,res)=>{
     uid=req.body.User
-    client.query(`SELECT * FROM "Cart" WHERE uid=$1`,[uid],(err,result)=>{
-      res.send([result.rowCount])
-    })
+    await prisma.cart.findMany({
+      where:{
+        uid:uid
+      }
+    }).then(data=>{return res.send([data.length])})
 }
 
-exports.cancelProduct=(req,res)=>{
+exports.cancelProduct=async(req,res)=>{
     buyid=req.body.Product.buyid
-    client.query(`Update "Buy" SET status=2 where buyid=$1`,[buyid],(err,result)=>{
-      if(err){
-        deleteUserToken(req.body.uid)
-        return res.sendStatus(400)
-      } 
-      if(!err){
-        res.send(['success'])
-      }
-      else{
-        return res.send([])
-      }
-    })
-
+    await prisma.buy.update({
+      where:{
+        buyid:buyid
+      },
+      data:{status:2}
+    }).then(data=>{return res.send(['success'])})
 }
 
-exports.getOfferedProducts=(req,res)=>{
-    client.query(`SELECT p.pid,p.productname,p.discount,p.rate,p.description,p.rating,c.category,b.brand,p.images FROM "Products" AS p,"Category" AS c,"Brands" AS b WHERE p.cid=c.cid AND p.bid=b.bid AND p.discount>0`,(err,result)=>{
-      if(err){
-        deleteUserToken(req.body.uid)
-        return res.sendStatus(400)
-      }     
-      if(result.rowCount==0){
-            return res.send([])
-          }
-          res.send(result.rows)
+exports.getOfferedProducts=async(req,res)=>{
+    await prisma.products.findMany({
+      where:{
+        discount:{gt:0}
+      }
+    }).then(async data=>{
+      for(let item of data){
+          await prisma.category.findOne({
+            where:{
+              cid:item.cid
+            },
+            select:{
+              category:true
+            }
+          }).then(result=>{
+            Object.assign(item,result)
+          })
+
+          await prisma.brands.findOne({
+            where:{
+              bid:item.bid
+            },
+            select:{
+              brand:true
+            }
+          }).then(result=>{
+            Object.assign(item,result)
+          })
+      }
+      return res.send(data)
     })
   }
 
-exports.getReviews=(req,res)=>{
+exports.getReviews=async (req,res)=>{
     pid=req.body.Data
-    client.query(`SELECT r.*,u.name,u.email FROM "Reviews" AS r,"User" AS u WHERE r.uid=u.id AND pid=$1`,[pid],(err,result)=>{
-      if(err){
-        return res.sendStatus(400)
-      } 
-      if(!err){
-        //console.log(result.rows)
-        return res.send(result.rows)
+    await prisma.reviews.findMany({
+      where:{
+        pid:pid
       }
-      else{
-        
-      }
+    }).then(async data=>{
+        for(let item of data){
+          await prisma.user.findOne({
+            where:{
+              id:item.uid
+            },
+            select:{
+              name:true,
+              email:true
+            }
+          }).then(result=>{
+            item.name=result.name
+            item.email=result.email
+          })
+        }
+        return res.send(data)
     })
   }
 
-exports.getAllReviews=(req,res)=>{
+exports.getAllReviews=async (req,res)=>{
     uid=req.body.Data
-    // console.log(uid)
-    client.query(`SELECT * from "Reviews" WHERE uid=$1`,[uid],(err,result)=>{
-      if(err){
-        return res.sendStatus(400)
-      } 
-      if(!err){
-        //console.log(result.rows)
-        return res.send(result.rows)
+    
+    await prisma.reviews.findMany({
+      where:{
+        uid:uid
       }
-      else{
-        
-      }
-    })
+    }).then(data=>{return res.send(data)})
+    
   }

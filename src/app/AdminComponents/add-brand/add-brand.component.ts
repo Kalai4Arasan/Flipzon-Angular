@@ -33,7 +33,7 @@ export class AddBrandComponent implements OnInit {
             Data[item.brand]=[item.category]
         }
       }
-      this.brands=Data
+      this.brands=data
       this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
         this.categories=data
       })
@@ -76,7 +76,7 @@ export class AddBrandComponent implements OnInit {
                     Data[item.brand]=[item.category]
                 }
               }
-              this.brands=Data
+              this.brands=data
               this._admin.Categories(this.adminData.admin_id).subscribe(data=>{
                 this.categories=data
               })

@@ -1,12 +1,5 @@
 exports.dbconnect=function (){
-    const { Client } = require('pg')
-    const client = new Client({
-    host: 'localhost',
-    port: 5432,
-    user: 'postgres',
-    password: 'kalai',
-    database:'flipzon'
-    })
-    client.connect()
-    return client
+    const PrismaClient=require("@prisma/client").PrismaClient
+    const prisma=new PrismaClient()
+    return prisma
 }
