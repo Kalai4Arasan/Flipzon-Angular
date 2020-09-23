@@ -4,7 +4,7 @@ const AdminController=require("../controllers/AdminController")
 const multer=require("multer")
 const storage=multer.diskStorage({
   destination:function(req,file,cb){
-      cb(null,'../../src/assets/productImages')
+      cb(null,'/01.CodingMart_Tasks/Flipzon-Angular/src/assets/productImages')
   },
   filename:function(req,file,cb){
       cb(null,file.fieldname+"-"+Date.now()+".jpg")
