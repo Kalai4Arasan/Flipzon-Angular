@@ -78,9 +78,10 @@ export class AddProductsComponent implements OnInit {
         }
     formData.append('jwtToken',sessionStorage.getItem("Admin"))
     formData.append('aid',this.adminData.admin_id)
-    this._admin.addProduct(formData).subscribe(data=>{
-      return this._router.navigate(['/admin/products'])
-    })
+    console.log(formData)
+    // this._admin.addProduct(formData).subscribe(data=>{
+    //   return this._router.navigate(['/admin/products'])
+    // })
   }
 
 }

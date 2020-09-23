@@ -179,14 +179,14 @@ exports.getProducts=async (req,res)=>{
                 total_amount:totalrate,
                 buying_date:buyingdate
               }
-            }).then(data=>{console.log(data);return res.send([response])}).catch(err=>{return res.sendStatus(400)})
+            }).then(data=>{return res.send([response])}).catch(err=>{return res.sendStatus(400)})
       }
       else{
-        console.log(response.status)
+        // console.log(response.status)
         return res.send([response])
       }
     }).catch(error => {
-      console.log(error)
+      //console.log(error)
       return res.send([])
     });
 }
@@ -321,7 +321,7 @@ exports.getOrderedProducts=async (req,res)=>{
 exports.deleteCart=async (req,res)=>{
     cid=req.body.Data.cid
     uid=req.body.Data.uid
-    console.log(req.body)
+    //console.log(req.body)
     await prisma.cart.deleteMany({
       where:{
         cart_id:cid

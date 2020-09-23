@@ -8,10 +8,18 @@
         "testEnvironment": "node",
         "coveragePathIgnorePatterns": [
             "/node_modules/"
+        ],
+        "collectCoverage": true,
+        "coverageReporters": [
+            "json",
+            "html"
         ]
     },
     "devDependencies": {
         "jest": "^26.4.2",
         "supertest": "^4.0.2"
+    },
+    "dependencies": {
+        "mz": "^2.7.0"
     }
 }

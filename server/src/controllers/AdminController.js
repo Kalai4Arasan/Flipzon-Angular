@@ -118,11 +118,13 @@ exports.allProducts=async (req,res)=>{
   }
 
 exports.addNewProduct=async (req,res)=>{
+    console.log(req.body)
     productname=req.body.productname
     description=req.body.description
     rate=req.body.rate
     rating=req.body.rating
     images=[]
+
     for(let item of req.files ){
       images.push(item.filename)
     }

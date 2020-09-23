@@ -6,7 +6,7 @@ const secretKey=process.env.SECRET_KEY
 exports.deleteUserToken=async (uid)=>{
     await prisma.userSessions.deleteMany({
       where:{
-        uid:uid
+        uid:parseInt(uid)
       }
     })
 }
@@ -43,23 +43,26 @@ uid=req.body.uid
 exports.deleteAdminToken=async (aid)=>{
   await prisma.adminSessions.deleteMany({
     where:{
-      aid:aid
+      aid:parseInt(aid)
     }
   })
 }
 exports.adminToken=async (req,res,next)=>{
   token=req.body.jwtToken
   aid=req.body.aid
+    //console.log(aid,token)
     await prisma.adminSessions.findMany({
       where:{
         AND:[{token:token},{aid:parseInt(aid)}]
       }
     }).then(result=>{
       if(result.length==0){
+          //console.log(result.length,aid,token)
           this.deleteAdminToken(aid)
           return res.sendStatus(403)
       }
       else{
+        //console.log(result.length,aid,token)
           jwt.verify(token,secretKey,(err,result)=>{
           if(err){
               this.deleteAdminToken(aid)

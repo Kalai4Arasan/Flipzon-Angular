@@ -2,6 +2,7 @@ require('dotenv').config()
 const request=require("supertest")
 const app=require("../Server")
 const jwt=require('jsonwebtoken')
+const fs=require("mz/fs")
 
 describe("Admin API calls Checking",()=>{
     var token=null
@@ -69,6 +70,28 @@ describe("Admin API calls Checking",()=>{
     })
 
 
+    it("Adding New product...",()=>{
+        const filepath=__dirname+"/testingfiles/image1.jpg"
+        fs.exists(filepath).then(async exists=>{
+            if(exists){
+                const res=await request(app).post("/addNewProduct").field({
+                    productname:"testing product",
+                    description:"testing",
+                    rate:1000,
+                    rating:3.8,
+                    category:"Appliances",
+                    brand:'LG',
+                    aid:id,
+                    jwtToken:token
+                }).attach("imagesGroup",filepath)
+                expect(res.statusCode).toEqual(200)
+            }
+            else{
+                console.log("Testing Files not found ")
+            }
+        })
+        
+    })
 
     it("Admin Logout Checking",async ()=>{
         //console.log(token,id)

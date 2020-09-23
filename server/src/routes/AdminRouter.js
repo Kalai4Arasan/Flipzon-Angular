@@ -7,7 +7,7 @@ const storage=multer.diskStorage({
       cb(null,'../../src/assets/productImages')
   },
   filename:function(req,file,cb){
-      cb(null,file.fieldname+"-"+Date.now()+"jpg")
+      cb(null,file.fieldname+"-"+Date.now()+".jpg")
   }
 })
 var upload=multer({storage:storage})
@@ -21,7 +21,7 @@ routes.post('/addCategory',adminToken,AdminController.addCategory)
 routes.post('/getBrands',adminToken,AdminController.getBrands)
 routes.post('/addBrand',adminToken,AdminController.addBrand)
 routes.post("/allProducts",adminToken,AdminController.allProducts)
-routes.post('/addNewProduct',upload.array('imagesGroup',12),adminToken,AdminController.addNewProduct)
+routes.post('/addNewProduct',upload.array('imagesGroup',1),adminToken,AdminController.addNewProduct)
 routes.post('/allOrders',adminToken,AdminController.allOrders)
 routes.post('/addDates',adminToken,AdminController.addDates)
 
