@@ -3,7 +3,6 @@ const prisma=require("../db-connect/dbconnect").dbconnect()
 const mainjs=require('../app')
 const deleteAdminToken=mainjs.deleteAdminToken
 const jwt=require('jsonwebtoken')
-const { SortOrder } = require("@prisma/client")
 const secretKey=process.env.SECRET_KEY
 
 
@@ -48,7 +47,7 @@ exports.getCategories=async(req,res)=>{
           orderBy:{
             cid:"desc"
           }
-        }).then(result=>{return res.send(result)})
+        }).then(result=>{return res.send(result)}).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
 exports.addCategory=async (req,res)=>{
@@ -59,7 +58,7 @@ exports.addCategory=async (req,res)=>{
       }
     }).then(data=>{
       this.getCategories(req,res)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
       
   }
 
@@ -68,7 +67,7 @@ exports.getBrands=async (req,res)=>{
       orderBy:{
         bid:"desc"
       }
-    }).then(data=>{return res.send(data)})
+    }).then(data=>{return res.send(data)}).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
 exports.addBrand=async (req,res)=>{
@@ -85,8 +84,8 @@ exports.addBrand=async (req,res)=>{
         orderBy:{
           bid:"desc"
         }
-      }).then(data=>{return res.send(data)})
-    })
+      }).then(data=>{return res.send(data)}).catch(err=>{console.log(err);return res.sendStatus(400)})
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.allProducts=async (req,res)=>{
@@ -101,7 +100,7 @@ exports.allProducts=async (req,res)=>{
           }
         }).then(result=>{
           Object.assign(item,result)
-        })
+        }).catch(err=>{console.log(err);return res.sendStatus(400)})
 
         await prisma.brands.findOne({
           where:{
@@ -112,10 +111,10 @@ exports.allProducts=async (req,res)=>{
           }
         }).then(result=>{
           Object.assign(item,result)
-        })
+        }).catch(err=>{console.log(err);return res.sendStatus(400)})
       }
       return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
 exports.addNewProduct=async (req,res)=>{
@@ -156,9 +155,9 @@ exports.addNewProduct=async (req,res)=>{
               cid:cid,
               bid:bid
           }
-        }).then(data=>{return res.send(['Success'])})
+        }).then(data=>{return res.send(['Success'])}).catch(err=>{console.log(err);return res.sendStatus(400)})
       })
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.allOrders=async (req,res)=>{
@@ -176,10 +175,10 @@ exports.allOrders=async (req,res)=>{
           Object.assign(item,result[0])
           totalData.push(item)
           }
-        })
+        }).catch(err=>{console.log(err);return res.sendStatus(400)})
       }
       return res.send(totalData)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.addDates=async (req,res)=>{
@@ -196,6 +195,6 @@ exports.addDates=async (req,res)=>{
         delivery_date:delivery,
         status:3
       }
-    }).then(data=>{return res.send(["Success"])})
+    }).then(data=>{return res.send(["Success"])}).catch(err=>{console.log(err);return res.sendStatus(400)})
 
 }

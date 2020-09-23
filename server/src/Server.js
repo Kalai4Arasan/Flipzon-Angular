@@ -3,6 +3,7 @@ const express=require("express")
 const app=express()
 
 
+
 /* Body parser*/
 const bodyparser=require("body-parser")
 app.use(bodyparser.json())
@@ -25,8 +26,9 @@ const AdminRoutes=require("./routes/AdminRouter.js")
 app.use("",UserRoutes)
 app.use("",AdminRoutes)
 
-
 /*Listening to the Server*/
-app.listen(3000,(err)=>{
-    console.log("connected")
+let server=app.listen(3000,(err)=>{
+  console.log("connected")
 })
+exports.serverClose=server.close()
+module.exports = app

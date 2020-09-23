@@ -2,7 +2,6 @@ const prisma=require("./db-connect/dbconnect").dbconnect()
 const jwt=require('jsonwebtoken')
 const secretKey=process.env.SECRET_KEY
 
-
 /* User Middleware */
 exports.deleteUserToken=async (uid)=>{
     await prisma.userSessions.deleteMany({

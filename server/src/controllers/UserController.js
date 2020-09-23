@@ -115,11 +115,11 @@ exports.getProducts=async (req,res)=>{
           if(result!=null){
           item.brand=result.brand
           }
-        })
+        }).catch(err=>{console.log(err);return res.sendStatus(400)})
       }
       totalData=data
-    })
-  })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
+  }).catch(err=>{console.log(err);return res.sendStatus(400)})
   return res.send(totalData)
   }
 
@@ -154,7 +154,7 @@ exports.getProducts=async (req,res)=>{
       })
 
       return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
   const stripe = require('stripe')("sk_test_51HPMbRBBOoJBqOTMje8ZGBb8ouAbQbmC0GVRNBRCL2TxAr2x4shDPRYmCe9iuAWWtHmTK1QuLRPtaTfNqQRxluuG00nHAek81R");
@@ -183,6 +183,7 @@ exports.getProducts=async (req,res)=>{
       }
       else{
         console.log(response.status)
+        return res.send([response])
       }
     }).catch(error => {
       console.log(error)
@@ -211,14 +212,14 @@ exports.addToCart=async (req,res)=>{
       else{
         return res.send(['Error'])
       }
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.cart=async (req,res)=>{
     uid=req.body.User
     await prisma.cart.findMany({
       where:{
-        uid:6,
+        uid:uid,
       }
     }).then(async data=>{
       for(let item of data){
@@ -261,7 +262,7 @@ exports.cart=async (req,res)=>{
         })
       }
       return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 
@@ -314,7 +315,7 @@ exports.getOrderedProducts=async (req,res)=>{
         })
       }
       return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.deleteCart=async (req,res)=>{
@@ -325,7 +326,7 @@ exports.deleteCart=async (req,res)=>{
       where:{
         cart_id:cid
       }
-    }).then(data=>{this.cart(req,res)})
+    }).then(data=>{this.cart(req,res)}).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.cartCount=async (req,res)=>{
@@ -334,7 +335,7 @@ exports.cartCount=async (req,res)=>{
       where:{
         uid:uid
       }
-    }).then(data=>{return res.send([data.length])})
+    }).then(data=>{return res.send([data.length])}).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.cancelProduct=async(req,res)=>{
@@ -344,7 +345,7 @@ exports.cancelProduct=async(req,res)=>{
         buyid:buyid
       },
       data:{status:2}
-    }).then(data=>{return res.send(['success'])})
+    }).then(data=>{return res.send(['success'])}).catch(err=>{console.log(err);return res.sendStatus(400)})
 }
 
 exports.getOfferedProducts=async(req,res)=>{
@@ -377,7 +378,7 @@ exports.getOfferedProducts=async(req,res)=>{
           })
       }
       return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
 exports.getReviews=async (req,res)=>{
@@ -402,7 +403,7 @@ exports.getReviews=async (req,res)=>{
           })
         }
         return res.send(data)
-    })
+    }).catch(err=>{console.log(err);return res.sendStatus(400)})
   }
 
 exports.getAllReviews=async (req,res)=>{
@@ -412,6 +413,6 @@ exports.getAllReviews=async (req,res)=>{
       where:{
         uid:uid
       }
-    }).then(data=>{return res.send(data)})
+    }).then(data=>{return res.send(data)}).catch(err=>{console.log(err);return res.sendStatus(400)})
     
   }
