@@ -1,5 +1,10 @@
 
 const prisma=require("../db-connect/dbconnect").dbconnect()
+const client=require("../db-connect/dbconnect").redisConnect()
+const {promisify}=require("util")
+const getAsync=promisify(client.get).bind(client)
+const setAsync=promisify(client.set).bind(client)
+const delAsync=promisify(client.del).bind(client)
 const mainjs=require('../app')
 const deleteAdminToken=mainjs.deleteAdminToken
 const jwt=require('jsonwebtoken')
@@ -23,6 +28,7 @@ exports.adminLogin=async(req,res)=>{
           }
       }).then(async result=>{
         token=jwt.sign(result[0],secretKey,{expiresIn:2700})
+        await setAsync(token,JSON.stringify(result[0])).then(data=>console.log(data))
         await prisma.adminSessions.create({
           data:{
             aid:result[0].admin_id,
@@ -35,6 +41,7 @@ exports.adminLogin=async(req,res)=>{
   }
 
 exports.adminLogout=async(req,res)=>{
+  await delAsync(token).then(data=>console.log(data))
   await prisma.adminSessions.deleteMany({
     where:{
       token:req.body.jwtToken
