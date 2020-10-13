@@ -48,4 +48,14 @@ export class AdminService {
   addProduct(data):Observable<any>{
     return this._http.post<any>('http://localhost:3000/addNewProduct',data)
   }
+
+  getEmails(aid):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/getTemplates',{jwtToken:sessionStorage.getItem("Admin"),aid:aid})
+  }
+  saveTemplate(design,template,type,aid):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/saveTemplate',{design:design,template:template,type:type,jwtToken:sessionStorage.getItem("Admin"),aid:aid})
+  }
+  deleteTemplate(tid,aid):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/deleteTemplate',{tid,jwtToken:sessionStorage.getItem("Admin"),aid:aid})
+  }
 }

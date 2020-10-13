@@ -207,3 +207,49 @@ exports.addDates=async (req,res)=>{
     }).then(data=>{return res.send(["Success"])}).catch(err=>{console.log(err);return res.sendStatus(400)})
 
 }
+
+exports.getTemplates=async(req,res)=>{
+    await prisma.mailtemplates.findMany().then(data=>{return res.send(data)}).catch(err=>{console.log(err);return res.sendStatus(400)})
+}
+
+exports.saveTemplate=async(req,res)=>{
+    //console.log(req.body)
+    await prisma.mailtemplates.findMany({
+      where:{
+        type:req.body.type.toLowerCase()
+      }
+    }).then(async data=>{
+      if(data.length==0){
+        await prisma.mailtemplates.create({
+          data:{
+            type:req.body.type.toLowerCase(),
+            design:req.body.design,
+            html:req.body.template
+          }
+        }).then((data)=>{this.getTemplates(req,res)}).catch(err=>{console.log(err);return res.sendStatus(400)})
+
+      }
+      else{
+          await prisma.mailtemplates.update({
+            where:{
+              tid:data[0].tid,
+            },
+            data:{
+              design:req.body.design,
+              html:req.body.template
+            }
+          }).then((data)=>{this.getTemplates(req,res)}).catch(err=>{console.log(err);return res.sendStatus(400)})
+      }
+    })
+
+}
+
+exports.deleteTemplate=async(req,res)=>{
+    await prisma.mailtemplates.delete({
+      where:{
+        tid:req.body.tid
+      }
+    }).then(result=>{
+      return res.send([result])
+    })
+}

@@ -1,7 +1,13 @@
 require('dotenv').config()
 const express=require("express")
+const webPush = require('web-push');
 const app=express()
 
+
+const publicVapidKey = process.env.publicKey;
+const privateVapidKey = process.env.privateKey;
+console.log(publicVapidKey)
+webPush.setVapidDetails("mailto: <kalaisivagi@gmail.com>", publicVapidKey, privateVapidKey);
 
 
 /* Body parser*/
@@ -30,5 +36,5 @@ app.use("",AdminRoutes)
 let server=app.listen(3000,(err)=>{
   console.log("connected")
 })
-exports.serverClose=server.close()
-module.exports = app
+// exports.serverClose=server.close()
+// module.exports = app

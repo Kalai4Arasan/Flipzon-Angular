@@ -19,6 +19,7 @@ import { AdminOrdersComponent } from './AdminComponents/admin-orders/admin-order
 import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-category/admin-orders-category.component';
 import { AddProductsComponent } from './AdminComponents/add-products/add-products.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { MailTemplatesComponent } from './AdminComponents/mail-templates/mail-templates.component';
 
 
 const routes: Routes = [
@@ -53,7 +54,8 @@ const routes: Routes = [
       { path:'',pathMatch:'full',redirectTo:'category/1'},
       {path:'category/:type',component:AdminOrdersCategoryComponent}
     ]
-    }
+    },
+    {path:'mailTemplates',component:MailTemplatesComponent}
   ]
   },
   {path:"**",redirectTo:'notFound/No Page Found'}

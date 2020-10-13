@@ -1,0 +1,12 @@
+.hoverLight:hover{
+    background-color: lightskyblue;
+    color: white;
+    cursor: pointer;
+}
+
+.templateShow{
+    border-right:1px solid rgba(0, 0, 0, 0.1);
+    height: 580px;
+    overflow-y: scroll;
+    text-align:center;
+}

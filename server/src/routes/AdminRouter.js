@@ -24,7 +24,9 @@ routes.post("/allProducts",adminToken,AdminController.allProducts)
 routes.post('/addNewProduct',upload.array('imagesGroup',1),adminToken,AdminController.addNewProduct)
 routes.post('/allOrders',adminToken,AdminController.allOrders)
 routes.post('/addDates',adminToken,AdminController.addDates)
-
+routes.post('/getTemplates',adminToken,AdminController.getTemplates)
+routes.post('/saveTemplate',adminToken,AdminController.saveTemplate)
+routes.post('/deleteTemplate',adminToken,AdminController.deleteTemplate)
 
 
 

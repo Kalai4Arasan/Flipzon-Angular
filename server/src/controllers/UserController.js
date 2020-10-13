@@ -2,9 +2,12 @@ const prisma=require("../db-connect/dbconnect").dbconnect()
 const client=require("../db-connect/dbconnect").redisConnect()
 const {promisify}=require("util")
 const getAsync=promisify(client.get).bind(client)
+const setLpush=promisify(client.lpush).bind(client)
 const setAsync=promisify(client.set).bind(client)
 const delAsync=promisify(client.del).bind(client)
 const mainjs=require('../app')
+const sg=require('@sendgrid/mail')
+sg.setApiKey(process.env.SENDGRID_API_KEY)
 
 const deleteUserToken=mainjs.deleteUserToken
 const jwt=require('jsonwebtoken')
@@ -18,6 +21,7 @@ exports.userRegister=async (req,res)=>{
     address=req.body.User.address
     phone=req.body.User.phone
     password=req.body.User.password
+    username=req.body.User.name
   
     await prisma.user.findMany({
       where:{
@@ -83,8 +87,8 @@ exports.userLogin=async (req,res)=>{
             logged_date:new Date().toGMTString()
           }
         }).catch(err=>{console.log(err);return res.sendStatus(400)})
-        return res.send([token])
-      }).catch(err=>{console.log(err);return res.sendStatus(400)})
+        return res.send([token])  
+    })
       
 }
 
@@ -170,6 +174,8 @@ exports.getProducts=async (req,res)=>{
   exports.buyProduct=async (req,res)=>{
     uid=req.body.Data.uid
     pid=req.body.Data.pid
+    email=req.body.Data.mail
+    username=req.body.Data.name
     quantity=req.body.Data.quantity
     totalrate=req.body.Data.totalRate
     buyingdate=req.body.Data.buyingdate
@@ -188,7 +194,48 @@ exports.getProducts=async (req,res)=>{
                 total_amount:totalrate,
                 buying_date:buyingdate
               }
-            }).then(data=>{return res.send([response])}).catch(err=>{return res.sendStatus(400)})
+            }).then(async data=>{
+
+              //Sending Product Buy Status to User
+              
+              await prisma.mailtemplates.findMany({
+                where:{
+                  type:'product bought'
+                } ,
+                select:{
+                  html:true
+                }
+              }).then(async data=>{
+                    await prisma.products.findMany({
+                      where:{
+                        pid:pid
+                      },
+                      select:{
+                        productname:true,
+                      }
+                    }).then(result=>{
+                      productname=result[0].productname
+                      const msg = {
+                        to: email, // Change to your recipient
+                        from: 'shopcokalai@gmail.com', // Change to your verified sender
+                        subject: 'Your Order Placed Successfully',
+                        html: eval('`'+JSON.parse(data[0].html).changingThisBreaksApplicationSecurity+'`'),
+                      }
+                      //console.log(email)
+                      //console.log(eval('`'+JSON.parse(data[0].html).changingThisBreaksApplicationSecurity+'`'))
+                      sg
+                        .send(msg)
+                        .then(() => {
+                          console.log('Email sent')
+                        })
+                        .catch((error) => {
+                          console.error(error)
+                        })
+                        return res.send([response])
+                     })
+                    
+              }).catch(err=>{return res.sendStatus(400)})
+            }).catch(err=>{return res.sendStatus(400)})
       }
       else{
         // console.log(response.status)
@@ -425,3 +472,45 @@ exports.getAllReviews=async (req,res)=>{
     }).then(data=>{return res.send(data)}).catch(err=>{console.log(err);return res.sendStatus(400)})
     
   }
+
+
+exports.addSubscriber=async(req,res)=>{
+    console.log("hello")
+    await setLpush("subscription",JSON.stringify(req.body.Data.sub)).then(data=>{
+      console.log(data)
+      return res.send(['success'])
+    })
+}
+  
+
+  //sending mails
+  // async function mail(){
+  //   username="Kalaiyarasan S"
+  //   await prisma.mailtemplates.findMany({
+  //     where:{
+  //       type:'bypasssecurityhtml'
+  //     },
+  //     select:{
+  //       html:true
+  //     }
+  //   }).then(data=>{
+  //     const msg = {
+  //       to: "kalaisivagi@gmail.com", // Change to your recipient
+  //       from: 'shopcokalai@gmail.com', // Change to your verified sender
+  //       subject: 'Welcome To FLIPZON',
+  //       html: eval('`'+JSON.parse(data[0].html).changingThisBreaksApplicationSecurity+'`'),
+  //     }
+  //     console.log(eval('`'+JSON.parse(data[0].html).changingThisBreaksApplicationSecurity+'`'))
+  //     // sg
+  //     //   .send(msg)
+  //     //   .then(() => {
+  //     //     console.log('Email sent')
+  //     //   })
+  //     //   .catch((error) => {
+  //     //     console.error(error)
+  //     //   })
+    
+  // }).catch(err=>{console.log(err);})
+  // }
+
+  // mail()

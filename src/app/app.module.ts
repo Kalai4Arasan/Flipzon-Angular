@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
+import { ServiceWorkerModule } from '@angular/service-worker';
 import {StripeModule} from 'stripe-angular';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,6 +29,11 @@ import { AdminOrdersComponent } from './AdminComponents/admin-orders/admin-order
 import { AdminOrdersCategoryComponent } from './AdminComponents/admin-orders-category/admin-orders-category.component';
 import { AddProductsComponent } from './AdminComponents/add-products/add-products.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { MailTemplatesComponent } from './AdminComponents/mail-templates/mail-templates.component';
+import { EmailEditorModule } from 'angular-email-editor';
+import { environment } from '../environments/environment';
+
+
 
 
 @NgModule({
@@ -51,13 +58,16 @@ import { NotFoundComponent } from './not-found/not-found.component';
     AdminOrdersCategoryComponent,
     AddProductsComponent,
     NotFoundComponent,
+    MailTemplatesComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    StripeModule.forRoot("pk_test_51HPMbRBBOoJBqOTMyqfUXOoSKbEAJD3vifwOOjkgloseK3oQbqIsW3QS5Icvv9BAgZIBREuDgszknnk71IWOZSTl00u4TOtrpu")
+    EmailEditorModule,
+    StripeModule.forRoot("pk_test_51HPMbRBBOoJBqOTMyqfUXOoSKbEAJD3vifwOOjkgloseK3oQbqIsW3QS5Icvv9BAgZIBREuDgszknnk71IWOZSTl00u4TOtrpu"),
+    ServiceWorkerModule.register('ngsw-worker.js',{enabled:environment.production}),  
   ],
   providers: [],
   bootstrap: [AppComponent]

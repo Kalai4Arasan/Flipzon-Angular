@@ -94,3 +94,10 @@ model UserSessions {
   logged_date String
   usid        Int    @default(dbgenerated()) @id
 }
+
+model Mailtemplates {
+  tid    Int    @default(dbgenerated()) @id
+  type   String
+  design String
+  html   String
+}

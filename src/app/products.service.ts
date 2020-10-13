@@ -63,4 +63,10 @@ export class ProductsService {
   addReview(data):Observable<any>{
     return this._http.post<any>('http://localhost:3000/addReview',{Data:data,jwtToken:sessionStorage.getItem("User"),uid:jwt_decode(sessionStorage.getItem("User")).id})
   }
+
+  addPushSubscriber(sub):Observable<any>{
+    return this._http.post<any>('http://localhost:3000/addSubscriber',{Data:{'sub':sub},jwtToken:sessionStorage.getItem("User"),uid:jwt_decode(sessionStorage.getItem("User")).id})
+  }
+
+
 }

@@ -65,6 +65,7 @@ export class BuyProductComponent implements OnInit {
           'pid':this.product.pid,
           'productname':this.product.productname,
           'name':this.User.name,
+          'mail':this.User.email,
           'address':this.User.address,
           'quantity':this.quantity,
           'totalRate':this.totalAmount,

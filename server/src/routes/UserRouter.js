@@ -20,6 +20,7 @@ routes.post("/cancelProduct",userToken,UserController.cancelProduct)
 routes.get('/getOfferedProducts',UserController.getOfferedProducts)
 routes.post('/getReviews',UserController.getReviews)
 routes.post('/allReviews',userToken,UserController.getAllReviews)
+routes.post('/addSubscriber',userToken,UserController.addSubscriber)
 
 module.exports=routes
   
